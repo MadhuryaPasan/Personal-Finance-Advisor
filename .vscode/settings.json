@@ -1,10 +1,6 @@
 {
     "python-envs.pythonProjects": [
         {
-            "name": "venv_pytorch_gpu_0",
-            "path": "C://Users//pkmpp//OneDrive//Documents//python//env//venv_pytorch_gpu_0//Scripts//python.exe"
-        },
-        {
             "name": "venv_TensorFlow_cpu_0",
             "path": "C://Users//pkmpp//OneDrive//Documents//python//env//venv_TensorFlow_cpu_0//Scripts//python.exe"
         }
