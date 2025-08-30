@@ -1,0 +1,13 @@
+{
+  "labels":[
+    "Food",
+    "Transport",
+    "Rent",
+    "Entertainment",
+    "Shopping",
+    "Bills",
+    "Other"
+  ],
+  "threshold":0.0,
+  "positive_label":null
+}

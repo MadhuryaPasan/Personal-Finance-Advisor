@@ -1,0 +1,60 @@
+2025-08-30 21:34:50,904 - Failed to load spaCy model: [E050] Can't find model '../../models/trained/expense_categorizer_v0'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-08-30 21:34:52,162 - Failed to load spaCy model: [E050] Can't find model '../../models/trained/expense_categorizer_v0'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-08-30 21:34:57,770 - Failed to load spaCy model: [E050] Can't find model '../models/trained/expense_categorizer_v0'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-08-30 21:35:44,520 - Failed to load spaCy model: [E050] Can't find model '../models/trained/expense_categorizer_v0'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-08-30 21:36:02,993 - Failed to load spaCy model: [E050] Can't find model '../models/trained/expense_categorizer_v0'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-08-30 21:36:08,027 - Failed to load spaCy model: [E050] Can't find model 'models	rained\expense_categorizer_v0'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-08-30 21:36:12,885 - Failed to load spaCy model: [E050] Can't find model 'models	rained\expense_categorizer_v0'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-08-30 21:36:15,784 - Failed to load spaCy model: [E050] Can't find model '../models/trained/expense_categorizer_v0'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-08-30 21:36:37,800 - Failed to load spaCy model: [E053] Could not read meta.json from ..
+2025-08-30 21:36:39,941 - Failed to load spaCy model: [E053] Could not read meta.json from ..\..
+2025-08-30 21:36:45,458 - Failed to load spaCy model: [E053] Could not read meta.json from .
+2025-08-30 21:36:55,367 - Failed to load spaCy model: [E053] Could not read meta.json from .
+2025-08-30 21:36:57,982 - Failed to load spaCy model: [E053] Could not read meta.json from ..
+2025-08-30 21:37:01,147 - Failed to load spaCy model: [E053] Could not read meta.json from .
+2025-08-30 21:37:04,136 - Failed to load spaCy model: [E050] Can't find model '@'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-08-30 21:37:05,361 - Failed to load spaCy model: [E050] Can't find model '@/'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-08-30 21:37:13,166 - Failed to load spaCy model: [E053] Could not read meta.json from ..
+2025-08-30 21:37:15,581 - Failed to load spaCy model: [E050] Can't find model '../models/'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-08-30 21:37:19,278 - Failed to load spaCy model: [E050] Can't find model '../models/trained/expense_categorizer_v0'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-08-30 21:39:03,981 - Failed to load spaCy model: [E050] Can't find model '../models/trained/expense_categorizer_v0'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-08-30 21:39:07,899 - Failed to load spaCy model: [E050] Can't find model '../models/trained/expense_categorizer_v0'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-08-30 21:39:11,113 - Failed to load spaCy model: [E050] Can't find model '../models/trained/expense_categorizer_v0'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-08-30 21:39:12,453 - Failed to load spaCy model: [E050] Can't find model '../models/trained/expense_categorizer_v0'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-08-30 21:39:13,752 - Failed to load spaCy model: [E050] Can't find model '../models/trained/expense_categorizer_v0'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-08-30 21:39:29,695 - Failed to load spaCy model: [E050] Can't find model '../models/expense_categorizer_v0'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-08-30 21:39:30,911 - Failed to load spaCy model: [E050] Can't find model '../models/expense_categorizer_v0'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-08-30 21:39:52,148 - Failed to load spaCy model: [E050] Can't find model '../models/expense_categorizer_v0'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-08-30 21:39:56,212 - Failed to load spaCy model: [E050] Can't find model '../models/expense_categorizer_v0'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-08-30 21:47:26,952 - Failed to load spaCy model: [E050] Can't find model '../models/expense_categorizer_v0'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-08-30 21:47:28,386 - Failed to load spaCy model: [E050] Can't find model '../models/expense_categorizer_v0'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-08-30 21:47:39,029 - Failed to load spaCy model: [E050] Can't find model 'expense_categorizer_v0'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-08-30 21:47:55,141 - Failed to load spaCy model: [E050] Can't find model 'expense_categorizer_v0'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-08-30 21:50:02,947 - Failed to load spaCy model: name 'model_path' is not defined
+2025-08-30 21:50:07,676 - Failed to load spaCy model: [E053] Could not read meta.json from .
+2025-08-30 21:50:08,986 - Failed to load spaCy model: [E053] Could not read meta.json from \
+2025-08-30 21:50:11,154 - Failed to load spaCy model: [E050] Can't find model '/models'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-08-30 21:50:12,503 - Failed to load spaCy model: [E050] Can't find model '/models/'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-08-30 21:50:14,920 - Failed to load spaCy model: [E050] Can't find model '/models/expense_categorizer_v0'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-08-30 21:50:34,576 - Failed to load spaCy model: [E050] Can't find model '../models/expense_categorizer_v0'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-08-30 21:50:43,889 - Failed to load spaCy model: [E050] Can't find model '../models/expense_categorizer_v0'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-08-30 21:51:14,661 - Failed to load spaCy model: [E053] Could not read meta.json from .
+2025-08-30 21:51:16,487 - Failed to load spaCy model: [E053] Could not read meta.json from ..
+2025-08-30 21:51:21,783 - Failed to load spaCy model: [E053] Could not read meta.json from ..
+2025-08-30 21:51:26,317 - Failed to load spaCy model: [E050] Can't find model '../models/expense_categorizer_v0'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-08-30 21:51:31,344 - Failed to load spaCy model: [E050] Can't find model '../models/expense_categorizer_v0'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-08-30 21:51:53,921 - Failed to load spaCy model: [E050] Can't find model '../models/trained/expense_categorizer_v0'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-08-30 21:51:57,149 - Failed to load spaCy model: [E050] Can't find model '../models/trained/expense_categorizer_v0'. It doesn't seem to be a Python package or a valid path to a data directory.
+2025-08-30 21:53:54,840 - Loaded trained spaCy model from C:\Users\pkmpp\OneDrive\Documents\y3s1\project\streamlit-ai-chat-app-with-ollama\models\expense_categorizer_v0
+2025-08-30 21:54:07,279 - Loaded trained spaCy model from C:\Users\pkmpp\OneDrive\Documents\y3s1\project\streamlit-ai-chat-app-with-ollama\models\expense_categorizer_v0
+2025-08-30 21:56:52,997 - Loaded trained spaCy model from C:\Users\pkmpp\OneDrive\Documents\y3s1\project\streamlit-ai-chat-app-with-ollama\models\expense_categorizer_v0
+2025-08-30 22:00:59,350 - Loaded trained spaCy model from C:\Users\pkmpp\OneDrive\Documents\y3s1\project\streamlit-ai-chat-app-with-ollama\models\expense_categorizer_v0
+2025-08-30 22:08:09,149 - Extracted amount 'Rs.1000' using regex from input 'Rs.1000 Uber ride to office'
+2025-08-30 22:08:09,149 - Input: Rs.1000 Uber ride to office | Category: Transport | Amount: Rs.1000 | Category scores: {'Food': 0.002390914363786578, 'Transport': 0.9905746579170227, 'Rent': 0.0012506598141044378, 'Entertainment': 0.0025657592341303825, 'Shopping': 0.0009895468829199672, 'Bills': 0.0005454908241517842, 'Other': 0.0016830791719257832}
+2025-08-30 22:16:49,230 - No amount found in input 'coffee no amount'
+2025-08-30 22:16:49,230 - Input: coffee no amount | Category: Shopping | Amount: Unknown | Category scores: {'Food': 0.21908527612686157, 'Transport': 0.05852041020989418, 'Rent': 0.057860832661390305, 'Entertainment': 0.17590269446372986, 'Shopping': 0.257672518491745, 'Bills': 0.16795040667057037, 'Other': 0.0630079135298729}
+2025-08-30 22:17:22,410 - Extracted amount 'Rs.1000' using regex from input 'Rs.1000 Uber ride to office'
+2025-08-30 22:17:22,410 - Input: Rs.1000 Uber ride to office | Category: Transport | Amount: Rs.1000 | Category scores: {'Food': 0.002390914363786578, 'Transport': 0.9905746579170227, 'Rent': 0.0012506598141044378, 'Entertainment': 0.0025657592341303825, 'Shopping': 0.0009895468829199672, 'Bills': 0.0005454908241517842, 'Other': 0.0016830791719257832}
+2025-08-30 22:18:42,758 - Loaded trained spaCy model from C:\Users\pkmpp\OneDrive\Documents\y3s1\project\streamlit-ai-chat-app-with-ollama\models\expense_categorizer_v0
+2025-08-30 22:18:51,221 - Extracted amount 'Rs.1000' using regex from input 'Rs.1000 Uber ride to office'
+2025-08-30 22:18:51,221 - Input: Rs.1000 Uber ride to office | Category: Transport | Amount: Rs.1000 | Category scores: {'Food': 0.002390914363786578, 'Transport': 0.9905746579170227, 'Rent': 0.0012506598141044378, 'Entertainment': 0.0025657592341303825, 'Shopping': 0.0009895468829199672, 'Bills': 0.0005454908241517842, 'Other': 0.0016830791719257832}
