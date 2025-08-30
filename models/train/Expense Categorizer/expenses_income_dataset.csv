@@ -1,0 +1,21 @@
+description,category,type
+Uber ride to office,Transport,Expense
+Pizza and coke,Food,Expense
+Monthly rent,Rent,Expense
+Netflix subscription,Entertainment,Expense
+Grocery shopping at Walmart,Food,Expense
+Electricity bill,Bills,Expense
+Bus ticket,Transport,Expense
+Amazon shopping,Shopping,Expense
+Movie ticket,Entertainment,Expense
+Water bill,Bills,Expense
+Bought KFC chicken,Food,Expense
+Train to work,Transport,Expense
+Paid internet bill,Bills,Expense
+New shoes from Nike,Shopping,Expense
+Dinner at McDonald's,Food,Expense
+Salary credited for August,Salary,Income
+Freelance payment from client,Freelance,Income
+Sold old bike - received ₹5000,Sale,Income
+Dividend received INR 2000,Investment,Income
+Refund from Amazon $15,Refund,Income
