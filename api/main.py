@@ -1,3 +1,5 @@
+# uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
+
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
