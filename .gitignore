@@ -1,2 +1,5 @@
 # Ignore VS Code settings folder
 .vscode/
+
+# Ignore all TOML files
+*.toml
