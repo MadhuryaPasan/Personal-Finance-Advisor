@@ -1,11 +1,6 @@
 import streamlit as st
 
-st.subheader("Expense Categorization - Test")
-
-import streamlit as st
-
-# ---- Page UI (header / helper text) ----
-st.subheader(ese Categorization  - Test")
+st.subheader("💸 Expense Categorization - Test")
 st.caption("Type an expense in plain text and submit. We’ll handle categorization next.")
 
 st.markdown(
