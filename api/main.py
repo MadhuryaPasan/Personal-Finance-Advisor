@@ -7,6 +7,7 @@ from jose import jwt, JWTError
 from agents.ExpenseCategorizer import ExpenseCategorizerAgent
 import bleach
 import os
+import streamlit as st
 
 app = FastAPI(
     title="Personal Finance Advisor API",
@@ -41,28 +42,43 @@ class TransactionRequest(BaseModel):  # Changed from ExpenseRequest
 security = HTTPBearer()
 
 # JWT authentication dependency
+# async def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
+#     try:
+#         token = credentials.credentials
+#         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+#         username = payload.get("username")
+#         if username not in USERS:
+#             raise HTTPException(status_code=401, detail="Invalid token")
+#         return username
+#     except JWTError:
+#         raise HTTPException(status_code=401, detail="Invalid or expired token")
+
+
+# new JWT authentication dependency for google login
 async def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
     try:
         token = credentials.credentials
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username = payload.get("username")
-        if username not in USERS:
-            raise HTTPException(status_code=401, detail="Invalid token")
+        username = payload.get("username")  # this is the email from frontend
+        if username is None:
+            raise HTTPException(status_code=401, detail="Invalid token: no username")
         return username
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
+
+
 
 # Input sanitization
 def sanitize_input(text: str) -> str:
     return bleach.clean(text)
 
-# Login endpoint
-@app.post("/login")
-async def login(request: LoginRequest):
-    if USERS.get(request.username) == request.password:
-        token = jwt.encode({"username": request.username}, SECRET_KEY, algorithm=ALGORITHM)
-        return {"token": token}
-    raise HTTPException(status_code=401, detail="Invalid credentials")
+# # Login endpoint
+# @app.post("/login")
+# async def login(request: LoginRequest):
+#     if USERS.get(request.username) == request.password:
+#         token = jwt.encode({"username": request.username}, SECRET_KEY, algorithm=ALGORITHM)
+#         return {"token": token}
+#     raise HTTPException(status_code=401, detail="Invalid credentials")
 
 # Prediction endpoint
 @app.post("/predict")
@@ -78,3 +94,17 @@ async def predict(request: TransactionRequest, username: str = Depends(verify_to
 @app.get("/health")
 async def health():
     return {"status": "API is running"}
+
+
+
+@app.post("/google_login")
+async def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    try:
+        token = credentials.credentials
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username = payload.get("username")  # email from frontend
+        if username is None:
+            raise HTTPException(status_code=401, detail="Invalid token: no username")
+        return username
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")

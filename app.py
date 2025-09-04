@@ -1,4 +1,5 @@
 import streamlit as st
+from controller.helpers.auth import *
 
 # streamlit app page configs for set the page title
 st.set_page_config(page_title="Personal Finance Advisor", layout="wide" , initial_sidebar_state="collapsed")
@@ -11,9 +12,11 @@ def login():
             st.login()
         # st.switch_page("app.py")
     else:
+        email = st.user.email
+        token = generate_email_jwt(email)
+        st.session_state["id_token"] = token
         st.toast("You are logged in")
         st.switch_page("pages/home.py")
-
 
 # register section code
 def register():

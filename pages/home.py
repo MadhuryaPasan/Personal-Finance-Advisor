@@ -1,5 +1,6 @@
 import streamlit as st
 from openai import OpenAI
+from controller.helpers.llmTools import *
 
 # edit code and save it
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Text
@@ -115,7 +116,10 @@ with st.sidebar:
 
 # main area
 logedInUserName = st.user.name
-st.markdown(st.user.sub)
+# st.markdown(st.user.sub)
+st.markdown(st.session_state["id_token"])
+# st.markdown(st.user.to_dict())
+# st.markdown(st.secrets["auth"].client_id)
 
 if len(st.session_state.messages) == 0:
     st.subheader(f"Welcome {logedInUserName}!")
