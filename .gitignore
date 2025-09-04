@@ -1,3 +1,5 @@
-# Ignore VS Code settings folder
 .vscode/
 .streamlit/
+__pycache__/
+*.log
+*.db
