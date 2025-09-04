@@ -2,7 +2,7 @@ import streamlit as st
 from openai import OpenAI
 
 # edit code and save it
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Text
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Text, text, inspect
 from sqlalchemy.orm import sessionmaker, declarative_base, relationship
 
 # Database setup
@@ -14,6 +14,7 @@ class Conversation(Base):
     __tablename__ = "conversations"
     id = Column(Integer, primary_key=True)
     title = Column(String, default="Untitled Chat")
+    user_id = Column(String, index=True)
     messages = relationship(
         "Message", back_populates="conversation", cascade="all, delete-orphan"
     )
@@ -40,6 +41,17 @@ engine = create_engine(
     "sqlite:///chat_main_db_v1.db", connect_args={"check_same_thread": False}
 )
 Base.metadata.create_all(engine)  # Create tables in the database
+
+# Ensure user_id column exists and is indexed
+try:
+    inspector = inspect(engine)
+    existing_columns = [col["name"] for col in inspector.get_columns("conversations")]
+    if "user_id" not in existing_columns:
+        with engine.begin() as conn:
+            conn.execute(text("ALTER TABLE conversations ADD COLUMN user_id TEXT"))
+            conn.execute(text("CREATE INDEX IF NOT EXISTS idx_conversations_user_id ON conversations(user_id)"))
+except Exception:
+    pass
 SessionLocal = sessionmaker(
     bind=engine
 )  # Create a session factory for database operations
@@ -75,6 +87,9 @@ if not st.user.is_logged_in:
 with st.sidebar:
     # logout btn
     if st.button("Log out", key="logout", use_container_width=True, icon="👋"):
+        st.session_state.conversation_id = None
+        st.session_state.messages = []
+        st.session_state.is_new_chat = True
         st.logout()
         st.rerun()
         st.switch_page("app.py")
@@ -91,7 +106,12 @@ with st.sidebar:
 
     db = SessionLocal()
     # load conversation history
-    conversationsList = db.query(Conversation).order_by(Conversation.id.desc()).all()
+    conversationsList = (
+        db.query(Conversation)
+        .filter_by(user_id=st.user.sub)
+        .order_by(Conversation.id.desc())
+        .all()
+    )
     # ! delete this for final production
     st.markdown(f"for testing (current chat) : {st.session_state.conversation_id}")
     if conversationsList:
@@ -101,15 +121,18 @@ with st.sidebar:
     for conv in conversationsList:
         if st.button(conv.title, key=conv.id, use_container_width=True , type="secondary"):
             # set the selected conversation id to the session state
-            st.session_state.conversation_id = conv.id
-            # set the is_new_chat flag to False
-            st.session_state.is_new_chat = False
-            # add messages to the session state
-            msgs = db.query(Message).filter_by(conversation_id=conv.id).all()
-            st.session_state.messages = [
-                {"role": m.role, "content": m.content} for m in msgs
-            ]
-            st.rerun()
+            if conv.user_id == st.user.sub:
+                st.session_state.conversation_id = conv.id
+                # set the is_new_chat flag to False
+                st.session_state.is_new_chat = False
+                # add messages to the session state
+                msgs = db.query(Message).filter_by(conversation_id=conv.id).all()
+                st.session_state.messages = [
+                    {"role": m.role, "content": m.content} for m in msgs
+                ]
+                st.rerun()
+            else:
+                st.warning("You do not have access to this conversation.")
     
 
 
@@ -153,7 +176,7 @@ if prompt := st.chat_input("Ask a question about personal finance..."):
 
     if st.session_state.conversation_id is None:
         # create a new conversation
-        new_conv = Conversation(title=prompt[:50] + "...")
+        new_conv = Conversation(title=prompt[:50] + "...", user_id=st.user.sub)
         db.add(new_conv)
         db.commit()
         st.session_state.conversation_id = new_conv.id
