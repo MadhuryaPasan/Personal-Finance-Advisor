@@ -1,21 +1,227 @@
 description,category,type
-Uber ride to office,Transport,Expense
-Pizza and coke,Food,Expense
-Monthly rent,Rent,Expense
-Netflix subscription,Entertainment,Expense
-Grocery shopping at Walmart,Food,Expense
-Electricity bill,Bills,Expense
-Bus ticket,Transport,Expense
-Amazon shopping,Shopping,Expense
-Movie ticket,Entertainment,Expense
-Water bill,Bills,Expense
-Bought KFC chicken,Food,Expense
-Train to work,Transport,Expense
-Paid internet bill,Bills,Expense
-New shoes from Nike,Shopping,Expense
-Dinner at McDonald's,Food,Expense
-Salary credited for August,Salary,Income
-Freelance payment from client,Freelance,Income
-Sold old bike - received ₹5000,Sale,Income
-Dividend received INR 2000,Investment,Income
-Refund from Amazon $15,Refund,Income
+Rs. 1000 Uber ride to office,Transport,Expense
+Pizza and coke for Rs. 850,Food,Expense
+Monthly rent of Rs. 25000,Rent,Expense
+Rs. 1500 for a Netflix subscription,Entertainment,Expense
+Grocery shopping at Cargills for Rs. 5000,Food,Expense
+Electricity bill for Rs. 3500,Bills,Expense
+Bus ticket for Rs. 150,Transport,Expense
+Amazon shopping for Rs. 7000,Shopping,Expense
+Movie ticket for Rs. 900,Entertainment,Expense
+Water bill for Rs. 800,Bills,Expense
+Bought KFC chicken for Rs. 2000,Food,Expense
+Train to work for Rs. 100,Transport,Expense
+Paid internet bill of Rs. 2500,Bills,Expense
+New shoes from Nike for Rs. 12000,Shopping,Expense
+Dinner at McDonald's for Rs. 1800,Food,Expense
+Received salary of Rs. 85000,Salary,Income
+Freelance payment of Rs. 30000,Freelance,Income
+Sold old bike for Rs. 5000,Sale,Income
+Dividend received Rs. 2000,Investment,Income
+Refund from Amazon for Rs. 1500,Refund,Income
+Rs. 1200 for a trip to the beach,Entertainment,Expense
+Bought new phone for Rs. 45000,Shopping,Expense
+Rs. 3000 paid for phone bill,Bills,Expense
+Dinner with friends for Rs. 5000,Food,Expense
+Rs. 2000 for a taxi ride,Transport,Expense
+School fees for Rs. 10000,Bills,Expense
+Rs. 800 paid for movie streaming,Entertainment,Expense
+Bought books for Rs. 4000,Shopping,Expense
+Rs. 150 for a short bus ride,Transport,Expense
+Paid gas bill of Rs. 1800,Bills,Expense
+Birthday gift for Rs. 5000,Shopping,Expense
+Rs. 2500 for a fancy dinner,Food,Expense
+Fuel for car for Rs. 7000,Transport,Expense
+Monthly rent of Rs. 30000,Rent,Expense
+Rs. 2000 paid for gym membership,Entertainment,Expense
+Grocery shopping at Keells for Rs. 6500,Food,Expense
+Water bill of Rs. 950,Bills,Expense
+Train fare for Rs. 250,Transport,Expense
+Bought a new laptop for Rs. 75000,Shopping,Expense
+Rs. 1500 for cinema tickets,Entertainment,Expense
+Rs. 4000 paid for an electricity bill,Bills,Expense
+Lunch at work for Rs. 600,Food,Expense
+Tuk-tuk ride to work for Rs. 500,Transport,Expense
+Paid internet bill of Rs. 2800,Bills,Expense
+Shopping for clothes for Rs. 10000,Shopping,Expense
+Rs. 2000 for a concert ticket,Entertainment,Expense
+Rs. 5000 paid for household bills,Bills,Expense
+Rs. 1500 for a coffee machine,Shopping,Expense
+Dinner for two for Rs. 3500,Food,Expense
+Bus fare for Rs. 200,Transport,Expense
+Rs. 1800 for a birthday party,Entertainment,Expense
+Bought groceries for Rs. 4500,Food,Expense
+Rs. 2500 paid for a water bill,Bills,Expense
+Train ticket to Galle for Rs. 800,Transport,Expense
+New dress for Rs. 6000,Shopping,Expense
+Rs. 2500 for a theme park entry,Entertainment,Expense
+Paid monthly rent of Rs. 28000,Rent,Expense
+Rs. 1200 paid for the phone bill,Bills,Expense
+Dinner at a hotel for Rs. 7000,Food,Expense
+Rs. 3000 for car service,Transport,Expense
+Rs. 2200 for a cinema visit,Entertainment,Expense
+Bought a new watch for Rs. 25000,Shopping,Expense
+Rs. 4000 paid for a gas bill,Bills,Expense
+Lunch at a cafe for Rs. 1200,Food,Expense
+Rs. 450 for a bus ticket,Transport,Expense
+Home repair costs of Rs. 5000,Bills,Expense
+Bought a new bag for Rs. 8000,Shopping,Expense
+Rs. 3000 for a music subscription,Entertainment,Expense
+Rs. 1800 paid for a water bill,Bills,Expense
+Groceries from Laugfs for Rs. 5500,Food,Expense
+Tuk-tuk to the market for Rs. 350,Transport,Expense
+House rent payment of Rs. 27000,Rent,Expense
+Rs. 1500 for a concert ticket,Entertainment,Expense
+Rs. 5000 paid for the electricity bill,Bills,Expense
+Dinner with family for Rs. 6500,Food,Expense
+Rs. 900 for a train ticket,Transport,Expense
+Rs. 10000 for new furniture,Shopping,Expense
+Rs. 2500 paid for the internet bill,Bills,Expense
+Snacks from a bakery for Rs. 400,Food,Expense
+Rs. 200 for a short bus ride,Transport,Expense
+Received salary of Rs. 75000,Salary,Income
+Freelance payment of Rs. 45000,Freelance,Income
+Sold old phone for Rs. 8000,Sale,Income
+Dividend received Rs. 3000,Investment,Income
+Refund from Daraz for Rs. 2500,Refund,Income
+Uber ride for Rs. 900,Transport,Expense
+Pizza for two for Rs. 1500,Food,Expense
+Monthly rent of Rs. 26000,Rent,Expense
+Rs. 1800 for a Netflix subscription,Entertainment,Expense
+Grocery shopping for Rs. 6000,Food,Expense
+Electricity bill for Rs. 4000,Bills,Expense
+Bus ticket for Rs. 180,Transport,Expense
+Daraz shopping for Rs. 8500,Shopping,Expense
+Movie ticket for Rs. 1000,Entertainment,Expense
+Water bill for Rs. 1000,Bills,Expense
+Bought Domino's pizza for Rs. 2200,Food,Expense
+Train to work for Rs. 120,Transport,Expense
+Paid internet bill of Rs. 2600,Bills,Expense
+New t-shirts from Odel for Rs. 5000,Shopping,Expense
+Dinner at Pizza Hut for Rs. 2500,Food,Expense
+Rs. 1200 for a train ticket to Kandy,Transport,Expense
+Rs. 3000 for a gaming subscription,Entertainment,Expense
+Bought a new pair of jeans for Rs. 7000,Shopping,Expense
+Rs. 4500 paid for an electricity bill,Bills,Expense
+Lunch at a food court for Rs. 800,Food,Expense
+Rs. 250 for a tuk-tuk ride,Transport,Expense
+Paid phone bill of Rs. 3200,Bills,Expense
+Rs. 9000 for new home appliances,Shopping,Expense
+Rs. 2500 for a live show ticket,Entertainment,Expense
+Rs. 5500 paid for household bills,Bills,Expense
+Bought coffee for Rs. 500,Food,Expense
+Rs. 150 for a bus ticket,Transport,Expense
+Rs. 2800 for a water bill,Bills,Expense
+New shoes for Rs. 9000,Shopping,Expense
+Rs. 3500 for a music festival ticket,Entertainment,Expense
+Monthly rent of Rs. 29000,Rent,Expense
+Rs. 1500 paid for the phone bill,Bills,Expense
+Dinner at a cafe for Rs. 4000,Food,Expense
+Rs. 2000 for a car wash,Transport,Expense
+Rs. 2800 for a movie date,Entertainment,Expense
+Bought a new cabinet for Rs. 15000,Shopping,Expense
+Rs. 4200 paid for a gas bill,Bills,Expense
+Lunch at a restaurant for Rs. 1800,Food,Expense
+Rs. 500 for a tuk-tuk ride,Transport,Expense
+Home improvement costs of Rs. 10000,Bills,Expense
+Bought a new jacket for Rs. 6000,Shopping,Expense
+Rs. 2000 for a weekend getaway,Entertainment,Expense
+Rs. 2100 paid for a water bill,Bills,Expense
+Groceries from Spar for Rs. 7000,Food,Expense
+Tuk-tuk to the office for Rs. 400,Transport,Expense
+House rent payment of Rs. 31000,Rent,Expense
+Rs. 1800 for a concert ticket,Entertainment,Expense
+Rs. 5200 paid for the electricity bill,Bills,Expense
+Dinner with friends for Rs. 7500,Food,Expense
+Rs. 1200 for a train ticket,Transport,Expense
+Rs. 12000 for new electronics,Shopping,Expense
+Rs. 2800 paid for the internet bill,Bills,Expense
+Snacks from a small shop for Rs. 300,Food,Expense
+Rs. 250 for a bus ride,Transport,Expense
+Received salary of Rs. 90000,Salary,Income
+Freelance payment of Rs. 35000,Freelance,Income
+Sold old books for Rs. 1000,Sale,Income
+Dividend received Rs. 4000,Investment,Income
+Refund from Daraz for Rs. 1800,Refund,Income
+Rs. 950 for an Uber ride to a friend's place,Transport,Expense
+Lunch for Rs. 750,Food,Expense
+Monthly rent of Rs. 27000,Rent,Expense
+Rs. 2000 for a premium streaming service,Entertainment,Expense
+Grocery shopping for Rs. 5500,Food,Expense
+Electricity bill of Rs. 3800,Bills,Expense
+Bus ticket for Rs. 160,Transport,Expense
+Shopping on Daraz for Rs. 6500,Shopping,Expense
+Movie ticket for Rs. 950,Entertainment,Expense
+Water bill for Rs. 850,Bills,Expense
+Bought local food for Rs. 1500,Food,Expense
+Train to work for Rs. 110,Transport,Expense
+Paid internet bill of Rs. 2700,Bills,Expense
+New clothes for Rs. 8000,Shopping,Expense
+Dinner at a new restaurant for Rs. 3000,Food,Expense
+Rs. 1500 for a taxi ride,Transport,Expense
+Rs. 2000 for a video game purchase,Entertainment,Expense
+Bought a new dress for Rs. 5000,Shopping,Expense
+Rs. 3500 paid for a phone bill,Bills,Expense
+Lunch at a food stall for Rs. 400,Food,Expense
+Rs. 200 for a bus ticket,Transport,Expense
+Paid gas bill of Rs. 1900,Bills,Expense
+Rs. 7500 for new shoes,Shopping,Expense
+Rs. 2500 for a concert ticket,Entertainment,Expense
+Rs. 1800 paid for a water bill,Bills,Expense
+Groceries from Arpico for Rs. 6200,Food,Expense
+Tuk-tuk to the station for Rs. 300,Transport,Expense
+House rent payment of Rs. 26500,Rent,Expense
+Rs. 1200 for a music subscription,Entertainment,Expense
+Rs. 4800 paid for the electricity bill,Bills,Expense
+Dinner with family for Rs. 5500,Food,Expense
+Rs. 850 for a train ticket,Transport,Expense
+Rs. 11000 for new home decor,Shopping,Expense
+Rs. 3000 paid for the internet bill,Bills,Expense
+Snacks and drinks for Rs. 500,Food,Expense
+Rs. 100 for a short bus ride,Transport,Expense
+Received salary of Rs. 80000,Salary,Income
+Freelance payment of Rs. 40000,Freelance,Income
+Sold old furniture for Rs. 15000,Sale,Income
+Dividend received Rs. 2500,Investment,Income
+Refund from Amazon for Rs. 1200,Refund,Income
+Rs. 1200 for a taxi to the airport,Transport,Expense
+Bought lunch for Rs. 900,Food,Expense
+Monthly rent of Rs. 28000,Rent,Expense
+Rs. 1500 for a cinema subscription,Entertainment,Expense
+Grocery shopping for Rs. 7000,Food,Expense
+Electricity bill of Rs. 4200,Bills,Expense
+Bus ticket for Rs. 190,Transport,Expense
+Shopping on Daraz for Rs. 9500,Shopping,Expense
+Movie ticket for Rs. 1100,Entertainment,Expense
+Water bill for Rs. 900,Bills,Expense
+Bought a cake for Rs. 2500,Food,Expense
+Train to work for Rs. 130,Transport,Expense
+Paid internet bill of Rs. 2900,Bills,Expense
+New gadgets for Rs. 20000,Shopping,Expense
+Dinner at a fine dining restaurant for Rs. 5000,Food,Expense
+Rs. 1800 for a bus ticket to a different city,Transport,Expense
+Rs. 3000 for a new game,Entertainment,Expense
+Bought a new phone case for Rs. 1500,Shopping,Expense
+Rs. 3800 paid for the phone bill,Bills,Expense
+Lunch at a fast-food outlet for Rs. 1000,Food,Expense
+Rs. 250 for a tuk-tuk ride to the market,Transport,Expense
+Paid gas bill of Rs. 2000,Bills,Expense
+Rs. 10000 for new clothes,Shopping,Expense
+Rs. 3500 for a music concert ticket,Entertainment,Expense
+Rs. 2200 paid for a water bill,Bills,Expense
+Groceries from Keells for Rs. 7500,Food,Expense
+Tuk-tuk to the bus stand for Rs. 250,Transport,Expense
+House rent payment of Rs. 30000,Rent,Expense
+Rs. 2000 for a streaming service,Entertainment,Expense
+Rs. 5000 paid for the electricity bill,Bills,Expense
+Dinner with colleagues for Rs. 6000,Food,Expense
+Rs. 950 for a train ticket to a different town,Transport,Expense
+Rs. 13000 for new kitchen appliances,Shopping,Expense
+Rs. 3200 paid for the internet bill,Bills,Expense
+Snacks for Rs. 450,Food,Expense
+Rs. 150 for a short bus ride,Transport,Expense
+Received salary of Rs. 95000,Salary,Income
+Freelance payment of Rs. 50000,Freelance,Income
+Sold old camera for Rs. 20000,Sale,Income
+Dividend received Rs. 3500,Investment,Income
+Refund from Daraz for Rs. 2000,Refund,Income
