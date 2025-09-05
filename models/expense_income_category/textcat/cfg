@@ -1,0 +1,17 @@
+{
+  "labels":[
+    "Food",
+    "Transport",
+    "Rent",
+    "Entertainment",
+    "Shopping",
+    "Bills",
+    "Salary",
+    "Freelance",
+    "Sale",
+    "Investment",
+    "Refund"
+  ],
+  "threshold":0.0,
+  "positive_label":null
+}
