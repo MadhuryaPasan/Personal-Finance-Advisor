@@ -138,7 +138,6 @@ with st.sidebar:
 
 # main area
 logedInUserName = st.user.name
-st.markdown(st.session_state["id_token"])
 
 if len(st.session_state.messages) == 0:
     st.subheader(f"Welcome {logedInUserName}!")
