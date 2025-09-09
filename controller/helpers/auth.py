@@ -16,3 +16,5 @@ def generate_email_jwt(email: str) -> str:
     )
     return token
 
+
+# st.markdown(st.session_state["id_token"])
