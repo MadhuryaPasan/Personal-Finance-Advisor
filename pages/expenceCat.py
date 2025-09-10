@@ -43,6 +43,7 @@ if st.button("Predict"):
                     st.write("**Type:** " + result.get("type", "N/A"))
                     st.write("**Category:** " + result.get("category", "N/A"))
                     st.write("**Amount:** " + str(result.get("amount", "N/A")))
+                    st.write("**user_request:** " + str(result.get("user_request", "N/A")))
                 else:
                     st.error(f"API request failed: {response.status_code} - {response.text}")
             except Exception as e:

@@ -86,7 +86,7 @@ async def predict(request: TransactionRequest, username: str = Depends(verify_to
     transaction_text = sanitize_input(request.transaction)  # Updated field name
     try:
         result = agent.predict_category_and_amount(transaction_text)
-        return result  # Return the dictionary {"type": ..., "category": ..., "amount": ...}
+        return {**result, "user_request": transaction_text} # Return the dictionary {"type": ..., "category": ..., "amount": ...}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Prediction failed: {str(e)}")
 
