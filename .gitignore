@@ -1,0 +1,5 @@
+.vscode/
+.streamlit/
+__pycache__/
+*.log
+*.db
