@@ -115,6 +115,6 @@ class ExpenseCategorizerAgent:
             return {"type": predicted_type, "category": predicted_cat, "amount": amount}
 
         except Exception as e:
-            # Log failure if prediction fails
+
             logging.error("Prediction failed for input '%s': %s", text, str(e))
             raise
