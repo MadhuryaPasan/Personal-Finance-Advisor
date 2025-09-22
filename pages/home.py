@@ -1,6 +1,5 @@
 import streamlit as st
 from openai import OpenAI
-from datetime import datetime,timedelta
 
 # edit code and save it
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Text, text, inspect
@@ -72,7 +71,7 @@ if "messages" not in st.session_state:
 if "is_new_chat" not in st.session_state:
     st.session_state.is_new_chat = True
 if "model_name" not in st.session_state:
-    st.session_state["model_name"] = "gemma3:1b"
+    st.session_state["model_name"] = "gemma3:270m"
 
 
 # streamlit app page configs for set the page title
@@ -158,21 +157,13 @@ for message in st.session_state.messages:
             st.markdown(message["content"])
 
 
-
-# get today's date
-today_date = datetime.now().strftime("%Y-%m-%d")
-yesterday_date = (datetime.now() - timedelta(days=1)).strftime("%A, %B %d, %Y")
-tomorrow_date = (datetime.now() + timedelta(days=1)).strftime("%A, %B %d, %Y")
 # give instructions to assistance
 SYSTEM_MESSAGE = {
     "role": "system",
     "content": (
-        f"You are a Personal Finance Advisor. The current date is {today_date}.  "
-        f"Yesterday was {yesterday_date}. "
-        f"Tomorrow will be {tomorrow_date}. "
-        "Only answer questions about personal finance (budgeting, saving, spending, "
-        "investing, retirement, taxes, insurance, debt, credit, financial products, "
-        "and financial planning). If a request is outside of personal finance, "
+        "You are Personal Finance Advisor. Only answer questions about personal finance "
+        "(budgeting, saving, spending, investing, retirement, taxes, insurance, debt, credit, "
+        "financial products, and financial planning). If a request is outside of personal finance, "
         "respond: 'I can only help with personal finance topics. Please ask about budgeting, saving, "
         "investing, debt, taxes, insurance, or credit.' Keep answers concise and practical."
     ),
