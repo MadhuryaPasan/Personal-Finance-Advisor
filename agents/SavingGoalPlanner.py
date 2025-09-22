@@ -110,20 +110,3 @@ class SavingGoalPlannerAgent:
         except Exception as e:
             logging.error(f"Progress tracking failed: {str(e)}")
             raise
-
-# For local testing
-# if __name__ == "__main__":
-#     agent = SavingGoalPlannerAgent()
-#     try:
-#         # Test create_goal
-#         goal = agent.create_goal("Vacation", 5000.0, "2026-01-01", 1000.0)
-#         print("Created Goal:", goal)
-#         # Test track_progress with sample ExpenseCategorizer output
-#         transactions = [
-#             {"type": "Expense", "category": "Transport", "amount": "rs 1,000", "user_request": "car service rs 1000"},
-#             {"type": "Income", "category": "Salary", "amount": "rs 2,000", "user_request": "salary rs 2000"}
-#         ]
-#         progress = agent.track_progress(goal, transactions, additional_savings=500.0)
-#         print("Progress:", progress)
-#     except Exception as e:
-#         print(f"Error: {str(e)}")
