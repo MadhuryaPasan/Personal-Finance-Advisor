@@ -1,110 +1,154 @@
+
 # uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
 
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
 from jose import jwt, JWTError
-from agents.ExpenseCategorizer import ExpenseCategorizerAgent
+from typing import Dict, List, Any, Optional
 import bleach
 import os
-import streamlit as st
+
+from agents.ExpenseCategorizer import ExpenseCategorizerAgent
+from agents.SavingGoalPlanner import SavingGoalPlannerAgent
+from agents.BudgetTracker import BudgetTrackerAgent
 
 app = FastAPI(
     title="Personal Finance Advisor API",
-    description="API for expense/income type and category prediction using trained spaCy models",
+    description="API for personal finance agents: expense categorization, saving goal planning, and budget tracking",
     version="1.0.0",
 )
 
-# Resolve model directories relative to this file
+# Resolve model directories for ExpenseCategorizer
 base_dir = os.path.dirname(__file__)
 type_model_dir = os.path.normpath(os.path.join(base_dir, "..", "models", "expense_income_type"))
 cat_model_dir = os.path.normpath(os.path.join(base_dir, "..", "models", "expense_income_category"))
 
-# Use the resolved paths when creating the agent
-agent = ExpenseCategorizerAgent(type_model_path=type_model_dir, cat_model_path=cat_model_dir)
+# Instantiate agents
+expense_agent = ExpenseCategorizerAgent(type_model_path=type_model_dir, cat_model_path=cat_model_dir)
+saving_agent = SavingGoalPlannerAgent()
+budget_agent = BudgetTrackerAgent()
 
-# Secret key for JWT (store securely in production)
+# JWT configuration (must match auth.py)
 SECRET_KEY = "your-secret-key"
 ALGORITHM = "HS256"
-
-# Dummy user database (replace with real database in production)
-USERS = {"user1": "password1"}
-
-# Pydantic model for request validation
-class LoginRequest(BaseModel):
-    username: str
-    password: str
-
-class TransactionRequest(BaseModel):  # Changed from ExpenseRequest
-    transaction: str  # Changed from expense
 
 # Security scheme for JWT
 security = HTTPBearer()
 
 # JWT authentication dependency
-# async def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
-#     try:
-#         token = credentials.credentials
-#         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-#         username = payload.get("username")
-#         if username not in USERS:
-#             raise HTTPException(status_code=401, detail="Invalid token")
-#         return username
-#     except JWTError:
-#         raise HTTPException(status_code=401, detail="Invalid or expired token")
-
-
-# new JWT authentication dependency for google login
 async def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
     try:
         token = credentials.credentials
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username = payload.get("username")  # this is the email from frontend
+        username = payload.get("username")
         if username is None:
             raise HTTPException(status_code=401, detail="Invalid token: no username")
         return username
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
-
-
 
 # Input sanitization
 def sanitize_input(text: str) -> str:
     return bleach.clean(text)
 
-# # Login endpoint
-# @app.post("/login")
-# async def login(request: LoginRequest):
-#     if USERS.get(request.username) == request.password:
-#         token = jwt.encode({"username": request.username}, SECRET_KEY, algorithm=ALGORITHM)
-#         return {"token": token}
-#     raise HTTPException(status_code=401, detail="Invalid credentials")
+# Pydantic model for ExpenseCategorizer
+class TransactionRequest(BaseModel):
+    transaction: str
 
-# Prediction endpoint
+# Pydantic models for SavingGoalPlanner
+class GoalCreateRequest(BaseModel):
+    goal_name: str
+    target_amount: float
+    deadline: str  # YYYY-MM-DD
+    current_savings: Optional[float] = 0.0
+
+class GoalTrackRequest(BaseModel):
+    goal: Dict[str, Any]
+    recent_transactions: List[Dict[str, Any]]  # From ExpenseCategorizer
+    additional_savings: Optional[float] = 0.0
+
+# Pydantic models for BudgetTracker
+class BudgetSetRequest(BaseModel):
+    category: str
+    monthly_limit: float
+    start_date: Optional[str] = None  # YYYY-MM-01
+
+class BudgetTrackRequest(BaseModel):
+    budget: Dict[str, Any]
+    recent_transactions: List[Dict[str, Any]]  # From ExpenseCategorizer
+    goal: Optional[Dict[str, Any]] = None  # From SavingGoalPlanner
+
+# ExpenseCategorizer endpoint
 @app.post("/predict")
-async def predict(request: TransactionRequest, username: str = Depends(verify_token)):  # Updated request model
-    transaction_text = sanitize_input(request.transaction)  # Updated field name
+async def predict(request: TransactionRequest, username: str = Depends(verify_token)):
+    transaction_text = sanitize_input(request.transaction)
     try:
-        result = agent.predict_category_and_amount(transaction_text)
-        return result  # Return the dictionary {"type": ..., "category": ..., "amount": ...}
+        result = expense_agent.predict_category_and_amount(transaction_text)
+        return {**result, "user_request": transaction_text}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Prediction failed: {str(e)}")
+
+# SavingGoalPlanner endpoints
+@app.post("/create_goal")
+async def create_goal(request: GoalCreateRequest, username: str = Depends(verify_token)):
+    try:
+        # TODO: Store in DB with user_id = username (st.user.sub)
+        result = saving_agent.create_goal(
+            request.goal_name,
+            request.target_amount,
+            request.deadline,
+            request.current_savings
+        )
+        return result
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=f"Invalid input: {str(e)}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Goal creation failed: {str(e)}")
+
+@app.post("/track_goal")
+async def track_goal(request: GoalTrackRequest, username: str = Depends(verify_token)):
+    try:
+        # TODO: Validate goal belongs to user via DB
+        result = saving_agent.track_progress(
+            request.goal,
+            request.recent_transactions,
+            request.additional_savings
+        )
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Goal tracking failed: {str(e)}")
+
+# BudgetTracker endpoints
+@app.post("/set_budget")
+async def set_budget(request: BudgetSetRequest, username: str = Depends(verify_token)):
+    try:
+        # TODO: Store in DB with user_id = username (st.user.sub)
+        result = budget_agent.set_budget(
+            request.category,
+            request.monthly_limit,
+            request.start_date
+        )
+        return result
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=f"Invalid input: {str(e)}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Budget set failed: {str(e)}")
+
+@app.post("/track_budget")
+async def track_budget(request: BudgetTrackRequest, username: str = Depends(verify_token)):
+    try:
+        # TODO: Validate budget and goal belong to user via DB
+        result = budget_agent.track_budget(
+            request.budget,
+            request.recent_transactions,
+            request.goal
+        )
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Budget tracking failed: {str(e)}")
 
 # Health check endpoint
 @app.get("/health")
 async def health():
     return {"status": "API is running"}
-
-
-
-@app.post("/google_login")
-async def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
-    try:
-        token = credentials.credentials
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username = payload.get("username")  # email from frontend
-        if username is None:
-            raise HTTPException(status_code=401, detail="Invalid token: no username")
-        return username
-    except JWTError:
-        raise HTTPException(status_code=401, detail="Invalid or expired token")
