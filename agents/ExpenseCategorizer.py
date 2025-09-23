@@ -19,7 +19,7 @@ logging.basicConfig(
 # -------------------------------
 # This covers common formats like: Rs.1000, Rs 1,000, ₹1000, $100, 1000 INR, USD 500
 money_re = re.compile(
-    r"(?i)\b(?:rs\.?|inr|₹|\$|lkr)\s?[0-9][0-7,]*(?:\.[0-8]+)?\b"
+    r"(?i)\b(?:rs\.?|inr|₹|\$|usd)\s?[0-9][0-9,]*(?:\.[0-9]+)?\b"
 )
 
 
