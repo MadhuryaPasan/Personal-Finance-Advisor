@@ -3,6 +3,8 @@ import re
 from typing import Dict, List, Optional, Any
 from datetime import datetime
 import math
+from controller.helpers.savinggoalplannersummerization import summarize_transactions
+
 
 # Logging for transparency
 logging.basicConfig(
@@ -13,6 +15,7 @@ logging.basicConfig(
 
 # Regex for extracting numeric amount (handles formats like "rs 1,000", "$500", "1000 INR")
 amount_re = re.compile(r"([0-9][0-9,]*(\.[0-9]+)?)")
+
 
 class SavingGoalPlannerAgent:
     """
@@ -44,8 +47,10 @@ class SavingGoalPlannerAgent:
             months_to_deadline = days_to_deadline / 30  # Approximate
 
             remaining_amount = target_amount - current_savings
-            monthly_savings_needed = math.ceil(remaining_amount / months_to_deadline) if months_to_deadline > 0 else 0
-            weekly_savings_needed = math.ceil(remaining_amount / (days_to_deadline / 7)) if days_to_deadline > 0 else 0
+            monthly_savings_needed = math.ceil(
+                remaining_amount / months_to_deadline) if months_to_deadline > 0 else 0
+            weekly_savings_needed = math.ceil(
+                remaining_amount / (days_to_deadline / 7)) if days_to_deadline > 0 else 0
 
             result = {
                 "goal_name": goal_name,
@@ -69,7 +74,8 @@ class SavingGoalPlannerAgent:
     def track_progress(
         self,
         goal: Dict[str, Any],
-        recent_transactions: List[Dict[str, Any]],  # List of ExpenseCategorizer outputs
+        # List of ExpenseCategorizer outputs
+        recent_transactions: List[Dict[str, Any]],
         additional_savings: float = 0.0,
     ) -> Dict[str, Any]:
         """
@@ -86,23 +92,28 @@ class SavingGoalPlannerAgent:
                     amount = float(match.group(0).replace(",", ""))
                 else:
                     amount = 0.0  # Default if parsing fails
-                    logging.warning(f"Failed to parse amount '{amount_str}' in tx: {tx}")
+                    logging.warning(
+                        f"Failed to parse amount '{amount_str}' in tx: {tx}")
 
                 if tx.get("type") == "Expense":
                     net_impact -= amount  # Expenses reduce savings
                 elif tx.get("type") == "Income":
                     net_impact += amount  # Income increases savings
 
-            updated_savings = goal["current_savings"] + additional_savings + net_impact
+            updated_savings = goal["current_savings"] + \
+                additional_savings + net_impact
             remaining = goal["target_amount"] - updated_savings
-            on_track = remaining <= 0 or updated_savings >= goal["target_amount"] * 0.9  # 90% threshold
+            # 90% threshold
+            on_track = remaining <= 0 or updated_savings >= goal["target_amount"] * 0.9
+
+            summary = summarize_transactions(recent_transactions)
 
             result = {
                 "goal_name": goal["goal_name"],
                 "updated_savings": updated_savings,
                 "remaining": remaining,
                 "on_track": on_track,
-                "suggestion": "Increase savings by 10% or reduce expenses if off track." if not on_track else "You're on track!",
+                "suggestion": {summary} if not on_track else "You're on track!",
             }
 
             logging.info(f"Tracked progress: {result}")
