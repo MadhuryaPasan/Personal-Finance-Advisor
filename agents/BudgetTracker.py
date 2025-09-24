@@ -3,6 +3,9 @@ import re
 from typing import Dict, List, Any, Optional
 from datetime import datetime
 
+# Import the new helper
+from controller.helpers.budgetTrackerSuggestion import summarize_budget_suggestions
+
 # Logging for transparency
 logging.basicConfig(
     filename="budget_tracker.log",
@@ -13,13 +16,14 @@ logging.basicConfig(
 # Regex for extracting numeric amount (handles "rs 1,000", "$500", etc.)
 amount_re = re.compile(r"([0-9][0-9,]*(\.[0-9]+)?)")
 
+
 class BudgetTrackerAgent:
     """
     Agent for setting and tracking budgets per category.
     Integrates with ExpenseCategorizer (sums expenses) and SavingGoalPlanner (checks impact on goals).
     """
 
-    def __init__(self):
+    def _init_(self):
         # Placeholder: In production, connect to SQLite DB for persistent budgets
         pass
 
@@ -57,7 +61,8 @@ class BudgetTrackerAgent:
         self,
         budget: Dict[str, Any],
         recent_transactions: List[Dict[str, Any]],  # From ExpenseCategorizer
-        goal: Optional[Dict[str, Any]] = None,  # Optional: From SavingGoalPlanner
+        # Optional: From SavingGoalPlanner
+        goal: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """
         Track spending against budget, integrating transactions and optional goal check.
@@ -73,10 +78,18 @@ class BudgetTrackerAgent:
                         amount = float(match.group(0).replace(",", ""))
                         current_spent += amount
                     else:
-                        logging.warning(f"Failed to parse amount '{amount_str}' in tx: {tx}")
+                        logging.warning(
+                            f"Failed to parse amount '{amount_str}' in tx: {tx}")
 
             over_budget = current_spent > budget["monthly_limit"]
             remaining_budget = budget["monthly_limit"] - current_spent
+
+            # Update budget dict temporarily for summarizer (to include current_spent)
+            budget_with_spent = {**budget, "current_spent": current_spent}
+
+            # Generate dynamic suggestions using the helper
+            suggestion = summarize_budget_suggestions(
+                budget_with_spent, recent_transactions, goal)
 
             result = {
                 "category": budget["category"],
@@ -85,10 +98,10 @@ class BudgetTrackerAgent:
                 "current_spent": current_spent,
                 "remaining_budget": remaining_budget,
                 "over_budget": over_budget,
-                "suggestion": "Reduce spending in this category." if over_budget else "Within budget.",
+                "suggestion": suggestion,
             }
 
-            # Integrate with SavingGoalPlanner: Check goal impact
+            # Integrate with SavingGoalPlanner: Check goal impact (enhanced with summarizer if needed)
             if goal:
                 if over_budget:
                     overspend = current_spent - budget["monthly_limit"]
@@ -101,6 +114,3 @@ class BudgetTrackerAgent:
         except Exception as e:
             logging.error(f"Budget tracking failed: {str(e)}")
             raise
-
-
-
