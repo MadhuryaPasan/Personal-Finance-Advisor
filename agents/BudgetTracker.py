@@ -49,13 +49,7 @@ class BudgetTrackerAgent:
             session = SessionLocal()
 
             # Create a new Budget object
-            new_budget = Budget(
-                user_id=user_id,
-                category=category,
-                monthly_limit=monthly_limit,
-                start_date=start_date,
-                current_spent=0.0,
-            )
+            d
 
             # Add the new budget to the session and commit
             session.add(new_budget)
@@ -139,15 +133,50 @@ class BudgetTrackerAgent:
             }
 
             # Integrate with SavingGoalPlanner: Check goal impact (enhanced with summarizer if needed)
-            if goal:
-                if over_budget:
-                    overspend = current_spent - budget["monthly_limit"]
-                    result["goal_impact"] = f"Over budget by {overspend:.2f}, may delay {goal['goal_name']} goal."
-                else:
-                    result["goal_impact"] = "No negative impact on goal."
+            # if goal:
+            #     if over_budget:
+            #         overspend = current_spent - budget["monthly_limit"]
+            #         result["goal_impact"] = f"Over budget by {overspend:.2f}, may delay {goal['goal_name']} goal."
+            #     else:
+            #         result["goal_impact"] = "No negative impact on goal."
 
             logging.info(f"Tracked budget: {result}")
             return result
         except Exception as e:
             logging.error(f"Budget tracking failed: {str(e)}")
             raise
+    
+    def get_budgets(self, user_id: str, category: Optional[str] = None) -> List[Dict[str, Any]]:
+        """
+        Retrieves budget data for a specific user, optionally filtered by category.
+        """
+        session = SessionLocal()
+        try:
+            query = session.query(Budget).filter(Budget.user_id == user_id)
+            if category:
+                query = query.filter(Budget.category == category)
+            
+            budgets = query.all()
+            
+            # Convert SQLAlchemy objects to a list of dictionaries
+            result = [
+                {
+                    "id": b.id,
+                    "user_id": b.user_id,
+                    "category": b.category,
+                    "monthly_limit": b.monthly_limit,
+                    "current_spent": b.current_spent,
+                    "start_date": b.start_date,
+                }
+                for b in budgets
+            ]
+            
+            logging.info(f"Retrieved {len(result)} budgets for user {user_id}")
+            return result
+            
+        except Exception as e:
+            logging.error(f"Failed to retrieve budgets for user {user_id}: {str(e)}")
+            raise
+        finally:
+            if 'session' in locals() and session:
+                session.close()

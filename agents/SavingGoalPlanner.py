@@ -196,3 +196,37 @@ class SavingGoalPlannerAgent:
         except Exception as e:
             logging.error(f"Progress tracking failed: {str(e)}")
             raise
+    
+    
+    def get_goals(self, user_id: str) -> List[Dict[str, Any]]:
+        """
+        Retrieves all saving goals for a specific user.
+        """
+        session = SessionLocal()
+        try:
+            goals = session.query(SavingGoal).filter(SavingGoal.user_id == user_id).all()
+            
+            # Convert SQLAlchemy objects to a list of dictionaries
+            result = [
+                {
+                    "id": g.id,
+                    "user_id": g.user_id,
+                    "goal_name": g.goal_name,
+                    "target_amount": g.target_amount,
+                    "deadline": g.deadline,
+                    "current_savings": g.current_savings,
+                    "monthly_savings_needed": g.monthly_savings_needed,
+                    "weekly_savings_needed": g.weekly_savings_needed,
+                }
+                for g in goals
+            ]
+            
+            logging.info(f"Retrieved {len(result)} goals for user {user_id}")
+            return result
+            
+        except Exception as e:
+            logging.error(f"Failed to retrieve goals for user {user_id}: {str(e)}")
+            raise
+        finally:
+            if 'session' in locals() and session:
+                session.close()
