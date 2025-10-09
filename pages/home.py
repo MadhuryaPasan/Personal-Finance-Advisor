@@ -70,7 +70,7 @@ class Budget(Base):
     """
     Represents a single budget entry for a user and category.
     """
-    _tablename_ = "budgets"
+    __tablename__ = "budgets"
 
     id = Column(Integer, primary_key=True)
     user_id = Column(String, index=True)
@@ -78,6 +78,22 @@ class Budget(Base):
     monthly_limit = Column(Integer, nullable=False)
     current_spent = Column(Integer, default=0)
     start_date = Column(String)  # Store as YYYY-MM-DD
+    
+    
+class SavingGoal(Base):
+    """
+    Represents a saving goal for a user.
+    """
+    __tablename__ = "saving_goals"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(String, index=True)
+    goal_name = Column(String, nullable=False)
+    target_amount = Column(Integer, nullable=False)
+    deadline = Column(String, nullable=False)  # Stored as YYYY-MM-DD
+    current_savings = Column(Integer, default=0)
+    monthly_savings_needed = Column(Integer, default=0)
+    weekly_savings_needed = Column(Integer, default=0)
 
 # ============================================================================
 # DATABASE INITIALIZATION
