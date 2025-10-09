@@ -58,6 +58,7 @@ class TransactionRequest(BaseModel):
 
 # Pydantic models for SavingGoalPlanner
 class GoalCreateRequest(BaseModel):
+    user_id:str
     goal_name: str
     target_amount: float
     deadline: str  # YYYY-MM-DD
@@ -96,6 +97,7 @@ async def create_goal(request: GoalCreateRequest, username: str = Depends(verify
     try:
         # TODO: Store in DB with user_id = username (st.user.sub)
         result = saving_agent.create_goal(
+            request.user_id,
             request.goal_name,
             request.target_amount,
             request.deadline,
