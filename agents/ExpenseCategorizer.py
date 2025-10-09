@@ -19,7 +19,7 @@ logging.basicConfig(
 # -------------------------------
 # This covers common formats like: Rs.1000, Rs 1,000, ₹1000, $100, 1000 INR, USD 500
 money_re = re.compile(
-    r"(?i)\b(?:rs\.?|inr|₹|\$|usd)\s?[0-9][0-9,]*(?:\.[0-9]+)?\b"
+    r"\b(?:rs\.?|inr|₹|\$|usd)\s?([0-9][0-9,]*(?:\.[0-9]+)?)\b"
 )
 
 
@@ -60,11 +60,11 @@ class ExpenseCategorizerAgent:
         # First try regex
         m = money_re.search(text)
         if m:
+            extracted_number = m.group(1) # Extract the captured group
             logging.info(
-                "Extracted amount '%s' using regex from input '%s'", m.group(
-                    0), text
+                "Extracted amount '%s' using regex from input '%s'", extracted_number, text
             )
-            return m.group(0)
+            return extracted_number
 
         # Fallback: try spaCy’s NER model (pretrained en_core_web_sm)
         try:
