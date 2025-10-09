@@ -92,6 +92,7 @@ class BudgetTrackerAgent:
                 budget_with_spent, recent_transactions, goal)
 
             result = {
+                "budget_id": budget["budget_id"],
                 "category": budget["category"],
                 "monthly_limit": budget["monthly_limit"],
                 "start_date": budget["start_date"],
