@@ -13,6 +13,7 @@ from sqlalchemy import (
     inspect,
 )
 from sqlalchemy.orm import sessionmaker, declarative_base, relationship
+import datetime
 
 # ============================================================================
 # DATABASE MODELS
@@ -92,6 +93,20 @@ class SavingGoal(Base):
     monthly_savings_needed = Column(Integer, default=0)
     weekly_savings_needed = Column(Integer, default=0)
 
+
+class Transaction(Base):
+    """
+    Represents a single financial transaction (expense or income).
+    """
+    __tablename__ = "transactions"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(String, index=True, nullable=False)
+    date = Column(String, default=lambda: datetime.date.today().isoformat(), nullable=False)
+    description = Column(String, nullable=False)
+    amount = Column(Integer, nullable=False)  # Consider Float or Numeric for production
+    type = Column(String, nullable=False) # e.g., 'Expense', 'Income'
+    category = Column(String, nullable=False)
 
 # ============================================================================
 # DATABASE INITIALIZATION
