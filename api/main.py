@@ -12,6 +12,7 @@ import os
 from agents.ExpenseCategorizer import ExpenseCategorizerAgent
 from agents.SavingGoalPlanner import SavingGoalPlannerAgent
 from agents.BudgetTracker import BudgetTrackerAgent
+from agents.transactionsAgent import TransactionsAgent
 
 app = FastAPI(
     title="Personal Finance Advisor API",
@@ -28,6 +29,7 @@ cat_model_dir = os.path.normpath(os.path.join(base_dir, "..", "models", "expense
 expense_agent = ExpenseCategorizerAgent(type_model_path=type_model_dir, cat_model_path=cat_model_dir)
 saving_agent = SavingGoalPlannerAgent()
 budget_agent = BudgetTrackerAgent()
+transaction_agent = TransactionsAgent()
 
 # JWT configuration (must match auth.py)
 SECRET_KEY = "your-secret-key"
@@ -80,6 +82,15 @@ class BudgetTrackRequest(BaseModel):
     budget: Dict[str, Any]
     recent_transactions: List[Dict[str, Any]]  # From ExpenseCategorizer
     goal: Optional[Dict[str, Any]] = None  # From SavingGoalPlanner
+    
+class GetBudgetRequest(BaseModel):
+    user_id:str
+    category: str = None
+    
+class TransactionCreateRequest(BaseModel):
+    user_id:str
+    user_request: str
+
 
 # ExpenseCategorizer endpoint
 @app.post("/predict")
@@ -90,6 +101,17 @@ async def predict(request: TransactionRequest, username: str = Depends(verify_to
         return {**result, "user_request": transaction_text}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Prediction failed: {str(e)}")
+    
+@app.post("/create_transaction")
+async def create_transaction(request: TransactionCreateRequest, username: str = Depends(verify_token)):
+    transaction_text = sanitize_input(request.user_request)
+    try:
+        result = transaction_agent.create_transaction(request.user_id,transaction_text)
+        return result
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=f"Invalid input: {str(e)}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Goal creation failed: {str(e)}")
 
 # SavingGoalPlanner endpoints
 @app.post("/create_goal")
@@ -156,3 +178,69 @@ async def track_budget(request: BudgetTrackRequest, username: str = Depends(veri
 @app.get("/health")
 async def health():
     return {"status": "API is running"}
+
+
+
+@app.get("/get_budgets")
+async def get_budgets(request: GetBudgetRequest, username: str = Depends(verify_token)):
+    """
+    Retrieves all budgets for the authenticated user, with an optional category filter.
+    """
+    try:
+        result = budget_agent.get_budgets(
+            request.user_id,
+            request.category,
+        )
+        if not result:
+            return {"message": "No budgets found for this user."}
+        else:
+            return result
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve budgets: {str(e)}")
+
+
+class GetGoalRequest(BaseModel):
+    user_id:str
+
+@app.get("/get_goals")
+async def get_goals(request: GetBudgetRequest, username: str = Depends(verify_token)):
+    """
+    Retrieves all saving goals for the authenticated user.
+    """
+    try:
+        result = saving_agent.get_goals(
+            request.user_id,
+        )
+        if not result:
+            return {"message": "No goals found for this user."}
+        else:
+            return result
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve goals: {str(e)}")
+    
+    
+class GetTransactionsRequest(BaseModel):
+    user_id:str
+    type:str = None
+    category:str = None
+
+@app.get("/get_transactions")
+async def get_goals(request: GetTransactionsRequest, username: str = Depends(verify_token)):
+    """
+    Retrieves all transactions for the authenticated user.
+    """
+    try:
+        result = transaction_agent.get_transaction(
+            request.user_id,
+            request.type,
+            request.category
+        )
+        if not result:
+            return {"message": "No Transaction found for this user."}
+        else:
+            return result
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve transactions: {str(e)}")
