@@ -9,7 +9,7 @@ def generate_email_jwt(email: str) -> str:
     token = jwt.encode(
         {
             "username": email,
-            "exp": datetime.now(timezone.utc) + timedelta(hours=1)
+            # "exp": datetime.now(timezone.utc) + timedelta(hours=1)
         },
         SECRET_KEY,
         algorithm=ALGORITHM
