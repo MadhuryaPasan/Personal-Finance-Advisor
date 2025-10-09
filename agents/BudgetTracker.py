@@ -2,6 +2,8 @@ import logging
 import re
 from typing import Dict, List, Any, Optional
 from datetime import datetime
+from sqlalchemy.exc import IntegrityError
+from controller.database.database import *
 
 # Import the new helper
 from controller.helpers.budgetTrackerSuggestion import summarize_budget_suggestions
@@ -23,12 +25,13 @@ class BudgetTrackerAgent:
     Integrates with ExpenseCategorizer (sums expenses) and SavingGoalPlanner (checks impact on goals).
     """
 
-    def _init_(self):
+    def init(self):
         # Placeholder: In production, connect to SQLite DB for persistent budgets
         pass
 
     def set_budget(
         self,
+        user_id: str,
         category: str,
         monthly_limit: float,
         start_date: str = None,  # Default to current month start
@@ -42,20 +45,53 @@ class BudgetTrackerAgent:
             if start_date is None:
                 start_date = datetime.now().strftime("%Y-%m-01")  # First of current month
 
+            # Initialize a new session
+            session = SessionLocal()
+
+            # Create a new Budget object
+            new_budget = Budget(
+                user_id=user_id,
+                category=category,
+                monthly_limit=monthly_limit,
+                start_date=start_date,
+                current_spent=0.0,
+            )
+
+            # Add the new budget to the session and commit
+            session.add(new_budget)
+            session.commit()
+
+            # Optional: Refresh to get the ID if needed
+            session.refresh(new_budget)
+
             result = {
-                "category": category,
-                "monthly_limit": monthly_limit,
-                "start_date": start_date,
-                "current_spent": 0.0,  # Initial
+                "id": new_budget.id,
+                "user_id": new_budget.user_id,
+                "category": new_budget.category,
+                "monthly_limit": new_budget.monthly_limit,
+                "start_date": new_budget.start_date,
+                "current_spent": new_budget.current_spent,
             }
-            logging.info(f"Set budget: {result}")
+            logging.info(f"Set and saved budget to DB: {result}")
             return result
+        except IntegrityError:
+            session.rollback()
+            logging.error(
+                "Failed to set budget due to integrity error (e.g., duplicate entry).")
+            raise ValueError(
+                "A budget for this category and user might already exist.")
         except ValueError as e:
             logging.error(f"Budget set failed: {str(e)}")
             raise
         except Exception as e:
+            # Rollback in case of any other error
+            session.rollback()
             logging.error(f"Budget set failed: {str(e)}")
             raise
+        finally:
+            # Ensure the session is closed
+            if 'session' in locals() and session:
+                session.close()
 
     def track_budget(
         self,
