@@ -70,6 +70,7 @@ class GoalTrackRequest(BaseModel):
 
 # Pydantic models for BudgetTracker
 class BudgetSetRequest(BaseModel):
+    user_id:str
     category: str
     monthly_limit: float
     start_date: Optional[str] = None  # YYYY-MM-01
@@ -125,6 +126,7 @@ async def set_budget(request: BudgetSetRequest, username: str = Depends(verify_t
     try:
         # TODO: Store in DB with user_id = username (st.user.sub)
         result = budget_agent.set_budget(
+            request.user_id,
             request.category,
             request.monthly_limit,
             request.start_date
