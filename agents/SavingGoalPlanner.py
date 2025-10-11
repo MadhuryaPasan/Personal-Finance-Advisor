@@ -4,6 +4,7 @@ import re
 import json
 from typing import Dict, List, Optional, Any
 import datetime as dt
+from sqlalchemy.exc import IntegrityError
 from openai import OpenAI
 from controller.database.database import *
 from controller.helpers.savinggoalplannersummerization import summarize_transactions
@@ -43,18 +44,18 @@ class SavingGoalPlannerAgent:
         """
         system_prompt = """You are a financial assistant that extracts saving goal details from user requests.
         
-Extract and return a JSON object with these fields:
-- "goal_name": The name/description of the saving goal (string)
-- "target_amount": The target amount to save (float, numeric only)
-- "deadline": The deadline date (string in YYYY-MM-DD format)
-- "current_savings": Amount already saved (float, defaults to 0 if not mentioned)
+        Extract and return a JSON object with these fields:
+        - "goal_name": The name/description of the saving goal (string)
+        - "target_amount": The target amount to save (float, numeric only)
+        - "deadline": The deadline date (string in YYYY-MM-DD format)
+        - "current_savings": Amount already saved (float, defaults to 0 if not mentioned)
 
-Rules:
-1. If user doesn't mention current_savings, set it to 0
-2. Extract only numeric values for amounts (no currency symbols)
-3. Parse dates flexibly (e.g., "next year", "in 6 months") to YYYY-MM-DD format
-4. Ensure all fields are present in the response
-5. Return ONLY valid JSON, no additional text"""
+        Rules:
+        1. If user doesn't mention current_savings, set it to 0
+        2. Extract only numeric values for amounts (no currency symbols)
+        3. Parse dates flexibly (e.g., "next year", "in 6 months") to YYYY-MM-DD format
+        4. Ensure all fields are present in the response
+        5. Return ONLY valid JSON, no additional text"""
 
         try:
             response = self.client.chat.completions.create(
@@ -69,7 +70,7 @@ Rules:
                 temperature=0.0,
                 response_format={"type": "json_object"},
             )
-
+            
             # Parse LLM response
             raw_content = response.choices[0].message.content.strip()
             content = raw_content.lstrip("`").lstrip("json").lstrip("\n").rstrip("`")
@@ -179,27 +180,57 @@ Rules:
                     if days_to_deadline > 0
                     else 0
                 )
+            session = SessionLocal()
+            new_goal = SavingGoal(
+                user_id=user_id,
+                goal_name=goal_name,
+                target_amount=target_amount,
+                deadline=deadline,
+                current_savings=current_savings,
+                monthly_savings_needed=monthly_savings_needed,
+                weekly_savings_needed=weekly_savings_needed,
+            )
 
+
+            session.add(new_goal)
+            session.commit()
+
+            # Optional: Refresh to get the ID if needed
+            session.refresh(new_goal)
             # Step 6: Prepare result
             result = {
-                "goal_name": goal_name,
-                "target_amount": target_amount,
-                "deadline": deadline,
-                "current_savings": current_savings,
+                "id": new_goal.id,
+                "user_id": new_goal.user_id,
+                "goal_name": new_goal.goal_name,
+                "target_amount": new_goal.target_amount,
+                "deadline": new_goal.deadline,
+                "current_savings": new_goal.current_savings,
                 "remaining_amount": remaining_amount,
-                "monthly_savings_needed": monthly_savings_needed,
-                "weekly_savings_needed": weekly_savings_needed,
+                "monthly_savings_needed": new_goal.monthly_savings_needed,
+                "weekly_savings_needed": new_goal.weekly_savings_needed,
             }
 
             logging.info(f"Successfully created goal: {result}")
             return result
 
+        except IntegrityError:
+            session.rollback()
+            logging.error(
+                "Failed to set goal due to integrity error (e.g., duplicate entry)."
+            )
+            raise ValueError("A goal for this already exist.")
         except ValueError as e:
-            logging.error(f"Goal creation validation failed: {str(e)}")
+            logging.error(f"Goal set failed: {str(e)}")
             raise
         except Exception as e:
-            logging.error(f"Goal creation failed: {str(e)}")
+            # Rollback in case of any other error
+            session.rollback()
+            logging.error(f"Goal set failed: {str(e)}")
             raise
+        finally:
+            # Ensure the session is closed
+            if "session" in locals() and session:
+                session.close()
 
     def track_progress(
         self,
