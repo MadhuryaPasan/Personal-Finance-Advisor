@@ -80,7 +80,7 @@ def login():
             email = st.user.email
             token = generate_email_jwt(email)
             st.session_state["id_token"] = token
-            st.success(f"✅ Welcome back, {email}!")
+            st.success(f"✅ Welcome back, {st.user.name}!")
             
             # Auto-redirect with a small delay for user to see the message
             st.markdown("Redirecting to dashboard...")

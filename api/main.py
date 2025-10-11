@@ -61,10 +61,7 @@ class TransactionRequest(BaseModel):
 # Pydantic models for SavingGoalPlanner
 class GoalCreateRequest(BaseModel):
     user_id:str
-    goal_name: str
-    target_amount: float
-    deadline: str  # YYYY-MM-DD
-    current_savings: Optional[float] = 0.0
+    user_request: str
 
 class GoalTrackRequest(BaseModel):
     goal: Dict[str, Any]
@@ -74,9 +71,7 @@ class GoalTrackRequest(BaseModel):
 # Pydantic models for BudgetTracker
 class BudgetSetRequest(BaseModel):
     user_id:str
-    category: str
-    monthly_limit: float
-    start_date: Optional[str] = None  # YYYY-MM-01
+    user_request: str
 
 class BudgetTrackRequest(BaseModel):
     budget: Dict[str, Any]
@@ -120,10 +115,7 @@ async def create_goal(request: GoalCreateRequest, username: str = Depends(verify
         # TODO: Store in DB with user_id = username (st.user.sub)
         result = saving_agent.create_goal(
             request.user_id,
-            request.goal_name,
-            request.target_amount,
-            request.deadline,
-            request.current_savings
+            request.user_request,
         )
         return result
     except ValueError as e:
@@ -149,11 +141,11 @@ async def track_goal(request: GoalTrackRequest, username: str = Depends(verify_t
 async def set_budget(request: BudgetSetRequest, username: str = Depends(verify_token)):
     try:
         # TODO: Store in DB with user_id = username (st.user.sub)
+        transaction_text = sanitize_input(request.user_request)
         result = budget_agent.set_budget(
             request.user_id,
-            request.category,
-            request.monthly_limit,
-            request.start_date
+            transaction_text,
+
         )
         return result
     except ValueError as e:
