@@ -276,6 +276,34 @@ Response:
 
 
 
+def agent_result_formatter(agent_result):
+    system_prompt = f"""
+    You are a professional and highly knowledgeable Personal Finance Advisor. 
+    Your primary role is to process and present structured financial data to users.
+
+    Follow these instructions precisely:
+    1. Always present the provided data in a clear, well-formatted **table** with descriptive headers.
+    2. After the table, provide a **concise summary** of the data.
+    3. Maintain a **professional and informative tone** at all times.
+    4. Do **not** include raw data, code, or JSON in your response. All information must be presented as formatted text.
+    5. Ensure that **all details** from the provided data are included in the response.
+    6. If you receive an error message, **return it exactly as it is** (e.g., “No items found for this user.”).
+    7. If no data is provided, **do not generate or assume any fake data**. Simply state that no data was provided.
+    """
+
+
+
+    result_json_string = json.dumps(agent_result, indent=4)
+    response = client.chat.completions.create(
+        model=model,
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": result_json_string},
+        ],
+        temperature=1.0,
+        # seed=42,
+    )
+    return response.choices[0].message.content.strip()
 
 
 
@@ -287,7 +315,10 @@ def agent_responce (user_prompt:str) :
     if tool_name == "expense_categorizer":
         payload = {"transaction": return_query}
         response = requests.post(predict_api_url, json=payload, headers=headers)
-        result = response.json()
+        result = agent_result_formatter(response.json())
+        
+        
+        
     elif tool_name == "all_budget_details":
         category = ""
         if return_query == "None" or return_query == "none":
@@ -298,8 +329,16 @@ def agent_responce (user_prompt:str) :
             classify_agent_result = response.json()
             category = classify_agent_result["category"]
         payload = {"user_id": user_id, "category": category}
-        response = requests.get(get_budget_api, json=payload, headers=headers)
-        result = response.json()
+        budget_response = requests.get(get_budget_api, json=payload, headers=headers)
+        
+        response_data = budget_response.json()
+        for result in response_data:
+            if 'user_id' in result:
+                del result['user_id']
+        result = agent_result_formatter(f"This is the list of budgets previously entered by the user.  : {response_data}")
+        # result = response.json()
+
+
 
     elif tool_name == "get_all_transactions":
         category = ""
@@ -317,7 +356,17 @@ def agent_responce (user_prompt:str) :
         get_transaction_response = requests.get(
             get_transaction_api, json=payload, headers=headers
         )
-        result = get_transaction_response.json()
+        
+        
+        response_data = get_transaction_response.json()
+        for result in response_data:
+            if 'user_id' in result:
+                del result['user_id']
+        result = agent_result_formatter(f"This is the list of transactions previously entered by the user.  : {response_data}")
+        
+        
+        
+        
     elif tool_name == "add_new_transaction":
         payload = {
             "user_id": user_id,
@@ -326,16 +375,24 @@ def agent_responce (user_prompt:str) :
         add_new_transaction_response = requests.post(
             create_transaction_api, json=payload, headers=headers
         )
-        result = add_new_transaction_response.json()
+        
+        response_data = add_new_transaction_response.json()
+        if 'user_id' in response_data:
+            del response_data['user_id']
+        result = agent_result_formatter(f"this is the details of new transaction and this data is succesfully saved : {response_data}")
+        
     elif tool_name == "add_new_budget":
         payload = {
             "user_id": user_id,
             "user_request": return_query
         }
         track_budget_response = requests.post(
-            create_transaction_api, json=payload, headers=headers
+            create_budget_api, json=payload, headers=headers
         )
-        result = track_budget_response.json()
+        response_data = track_budget_response.json()
+        if 'user_id' in response_data:
+            del response_data['user_id']
+        result = agent_result_formatter(f"this is the details of setting up new budget plan and this data is succesfully saved  : {response_data}")
 
     elif tool_name == "track_budget":
         payload = {"transaction": return_query}
@@ -361,7 +418,8 @@ def agent_responce (user_prompt:str) :
         track_budget_response = requests.post(
             track_budget_api, json=payload, headers=headers
         )
-        result = track_budget_response.json()
+        response_data = track_budget_response.json()
+        result = response_data['suggestion']
 
     elif tool_name == "general":
         response = client.chat.completions.create(
@@ -372,6 +430,10 @@ def agent_responce (user_prompt:str) :
             ],
         )
         result = response.choices[0].message.content.strip()
-    print(result)
-    print()
-    print(tool_name, return_query)
+    
+    return result
+    
+    
+    
+    
+    

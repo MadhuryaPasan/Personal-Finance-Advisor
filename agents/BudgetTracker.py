@@ -161,6 +161,18 @@ class BudgetTrackerAgent:
                 budget_with_spent, recent_transactions, goal
             )
 
+            result_markdown = f"""
+            \n\n
+            ---
+            Budget ID: {budget["budget_id"]}\n
+            Category: {budget["category"]}\n
+            Monthly Limit: {budget["monthly_limit"]}\n
+            Start Date: {budget["start_date"]}\n
+            Current Spent: {current_spent}\n
+            Remaining Budget: {remaining_budget}\n
+            Over Budget: {over_budget}\n
+            \n\n
+            """
             result = {
                 "budget_id": budget["budget_id"],
                 "category": budget["category"],
@@ -169,7 +181,7 @@ class BudgetTrackerAgent:
                 "current_spent": current_spent,
                 "remaining_budget": remaining_budget,
                 "over_budget": over_budget,
-                "suggestion": suggestion,
+                "suggestion": result_markdown + "\n\n" + suggestion,
             }
 
             # Integrate with SavingGoalPlanner: Check goal impact (enhanced with summarizer if needed)

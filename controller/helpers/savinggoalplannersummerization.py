@@ -33,7 +33,7 @@ def summarize_transactions(transactions, model="gemma3:1b"):
     response = client.chat.completions.create(
         model=model,
         messages=[
-            {"role": "system", "content": "You are a financial assistant. Provide practical suggestions based on the budget status and transactions. Summarize in a few bullet points, include tips to improve, and consider any goal impact."},
+            {"role": "system", "content": "You are a financial assistant. Provide practical suggestions based on the budget status and transactions. Begin by including the original result you received, then summarize your advice in a few bullet points. Include tips for improvement and consider the impact on any financial goals."},
             {"role": "user", "content": f"Here are my recent transactions:\n{transactions_text}\n\nSummarize them and give me a short insight."}
         ]
     )
