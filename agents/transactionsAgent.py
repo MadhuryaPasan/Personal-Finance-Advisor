@@ -8,7 +8,7 @@ from agents.ExpenseCategorizer import ExpenseCategorizerAgent
 import os
 
 # Resolve model directories for ExpenseCategorizer
-base_dir = os.path.dirname(_file_)
+base_dir = os.path.dirname(__file__)
 type_model_dir = os.path.normpath(
     os.path.join(base_dir, "..", "models", "expense_income_type")
 )
@@ -57,7 +57,7 @@ class TransactionsAgent:
                     amount = predict_results["amount"]
                 new_transaction = Transaction(
                     user_id=user_id,
-                    description=user_request,
+                    user_request=user_request,
                     amount=amount,
                     type=predict_results["type"],
                     category=predict_results["category"],
@@ -67,9 +67,9 @@ class TransactionsAgent:
                 session.commit()
 
                 result = {
-                    "id": new_transaction.id,
+                    "transactions_id": new_transaction.transactions_id,
                     "user_id": new_transaction.user_id,
-                    "description": new_transaction.description,
+                    "user_request": new_transaction.user_request,
                     "amount": new_transaction.amount,
                     "type": new_transaction.type,
                     "category": new_transaction.category,
@@ -126,10 +126,10 @@ class TransactionsAgent:
             # Convert SQLAlchemy objects to a list of dictionaries
             result = [
                 {
-                    "id": t.id,
+                    "transactions_id": t.transactions_id,
                     "user_id": t.user_id,
                     "date": t.date,
-                    "description": t.description,
+                    "user_request": t.user_request,
                     "amount": t.amount,
                     "type": t.type,
                     "category": t.category,

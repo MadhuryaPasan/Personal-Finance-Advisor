@@ -1,32 +1,42 @@
 import spacy
 import re
 import logging
-from typing import Dict, Tuple
+from typing import Dict, Optional
+from openai import OpenAI
+import json
 
-# -------------------------------
-# Logging setup for Responsible AI
-# -------------------------------
-# This ensures all predictions, model loading, and errors are logged for transparency and debugging.
+# ============================================
+# Fixed Labels (DO NOT MODIFY)
+# ============================================
+type_labels = ["Expense", "Income"]
+expense_cats = ["Food", "Transport", "Rent", "Entertainment", "Shopping", "Bills", "Other"]
+income_cats = ["Salary", "Freelance", "Sale", "Investment", "Refund", "Other"]
+all_categories = expense_cats + income_cats
+
+# ============================================
+# Logging Setup for Transparency & Debugging
+# ============================================
 logging.basicConfig(
-    filename="expense_classifier.log",  # Log file name
-    # Log level (INFO: normal ops, ERROR: failures, WARNING: anomalies)
+    filename="expense_classifier.log",
     level=logging.INFO,
-    format="%(asctime)s - %(message)s",  # Format includes timestamp + message
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 
-# -------------------------------
-# Regex for detecting money values
-# -------------------------------
-# This covers common formats like: Rs.1000, Rs 1,000, ₹1000, $100, 1000 INR, USD 500
-money_re = re.compile(
-    r"\b(?:rs\.?|inr|₹|\$|usd)\s?([0-9][0-9,]*(?:\.[0-9]+)?)\b"
+# ============================================
+# Regex for Money Extraction
+# ============================================
+# Matches: Rs.1000, Rs 1,000, ₹1000, $100, 1000 INR, USD 500, etc.
+MONEY_PATTERN = re.compile(
+    r"\b(?:rs\.?|inr|₹|\$|usd)\s?([0-9][0-9,]*(?:\.[0-9]+)?)\b",
+    re.IGNORECASE
 )
 
 
 class ExpenseCategorizerAgent:
     """
-    Agent that categorizes financial text into Expense/Income type,
-    predicts specific category (e.g., Food, Transport), and extracts monetary amounts.
+    Two-stage categorization system:
+    1. spaCy models predict type (Expense/Income) and category
+    2. LLM verifies and corrects predictions if needed
     """
 
     def __init__(
@@ -34,87 +44,192 @@ class ExpenseCategorizerAgent:
         type_model_path: str = "../models/expense_income_type",
         cat_model_path: str = "../models/expense_income_category",
     ):
-        """Initialize the agent with trained spaCy models for type and category."""
+        """Load spaCy models and initialize LLM client."""
         try:
-            # Load spaCy model for Expense/Income type classification
             self.nlp_type = spacy.load(type_model_path)
-
-            # Load spaCy model for Category classification (Food, Travel, etc.)
             self.nlp_cat = spacy.load(cat_model_path)
-
             logging.info(
-                "Loaded type model from %s and category model from %s",
-                type_model_path,
-                cat_model_path,
+                f"Successfully loaded models from {type_model_path} and {cat_model_path}"
             )
         except Exception as e:
-            # Log model loading failure and raise exception
-            logging.error("Failed to load spaCy models: %s", str(e))
+            logging.error(f"Failed to load spaCy models: {str(e)}")
             raise
 
-    def extract_money(self, text: str) -> str:
+        # Initialize LLM client (using Ollama with Gemma)
+        self.client = OpenAI(
+            base_url="http://localhost:11434/v1",
+            api_key="dummy_key",
+        )
+        self.llm_model = "gemma3:1b"
+
+    def extract_money(self, text: str) -> Optional[str]:
         """
         Extract monetary amount from text.
-        Uses regex first, then falls back to spaCy NER if needed.
+        Tries regex first, falls back to spaCy NER if needed.
+        Returns cleaned number (e.g., "1000") or None.
         """
-        # First try regex
-        m = money_re.search(text)
-        if m:
-            extracted_number = m.group(1) # Extract the captured group
-            logging.info(
-                "Extracted amount '%s' using regex from input '%s'", extracted_number, text
-            )
-            return extracted_number
+        # Attempt regex extraction
+        match = MONEY_PATTERN.search(text)
+        if match:
+            amount = match.group(1).replace(",", "")  # Remove commas
+            logging.info(f"Extracted amount '{amount}' via regex from: {text}")
+            return amount
 
-        # Fallback: try spaCy’s NER model (pretrained en_core_web_sm)
+        # Fallback: Use spaCy's NER model
         try:
-            ner = spacy.load("en_core_web_sm")  # Load lightweight NER model
-            doc = ner(text)
+            ner_model = spacy.load("en_core_web_sm")
+            doc = ner_model(text)
             for ent in doc.ents:
-                if ent.label_.upper() == "MONEY":
-                    logging.info(
-                        "Extracted amount '%s' using NER from input '%s'",
-                        ent.text,
-                        text,
-                    )
-                    return ent.text
-        except Exception:
-            # If even fallback fails, ignore and continue
-            pass
+                if ent.label_ == "MONEY":
+                    # Clean the amount
+                    cleaned = ent.text.replace(",", "").strip()
+                    logging.info(f"Extracted amount '{cleaned}' via NER from: {text}")
+                    return cleaned
+        except Exception as e:
+            logging.warning(f"NER fallback failed: {str(e)}")
 
-        # If no match found
-        logging.warning("No amount found in input '%s'", text)
+        logging.warning(f"No amount found in: {text}")
         return None
 
-    def predict_category_and_amount(self, text: str) -> Dict[str, str]:
+    def _validate_labels(self, type_val: str, cat_val: str) -> tuple[str, str]:
         """
-        Predicts:
-          - Type: Expense or Income
-          - Category: e.g., Food, Travel, Bills
-          - Amount: extracted currency value (if available)
+        Validate that type and category are in the allowed labels.
+        If not, default to safe values: "Expense" and "Other".
+        """
+        if type_val not in type_labels:
+            logging.warning(f"Invalid type '{type_val}', defaulting to 'Expense'")
+            type_val = "Expense"
+
+        if cat_val not in all_categories:
+            logging.warning(f"Invalid category '{cat_val}', defaulting to 'Other'")
+            cat_val = "Other"
+
+        return type_val, cat_val
+
+    def _verify_with_llm(self, text: str, spacy_prediction: Dict) -> Dict:
+        """
+        Use LLM to verify spaCy's prediction.
+        Returns corrected categorization if needed.
+        """
+        system_prompt = f"""You are a financial transaction categorizer.
+Your task is to verify and, if necessary, correct the categorization provided.
+
+ALLOWED VALUES:
+- Type: {type_labels}
+- Categories: {all_categories}
+
+You MUST respond with valid JSON containing:
+- "is_correct": boolean indicating if the provided prediction is correct
+- "corrected_type": The correct Type (must be from {type_labels})
+- "corrected_category": The correct Category (must be from {all_categories})
+- "corrected_amount": The amount as a clean number (e.g., "1000")
+- "reason": Brief explanation of any correction
+
+If the prediction is correct, set is_correct to true and corrected_* fields to match the input prediction.
+
+Transaction Text: "{text}"
+Current Prediction: {json.dumps(spacy_prediction)}"""
+
+        try:
+            response = self.client.chat.completions.create(
+                model=self.llm_model,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": f"Verify this transaction: {text}"},
+                ],
+                temperature=0.0,
+                response_format={"type": "json_object"},
+            )
+
+            # Parse LLM response
+            raw_content = response.choices[0].message.content.strip()
+            content = raw_content.lstrip("`").lstrip("json").lstrip("\n").rstrip("`")
+            llm_result = json.loads(content)
+
+            logging.info(
+                f"LLM verification for '{text}': is_correct={llm_result.get('is_correct')}"
+            )
+
+            # Validate and sanitize the LLM output
+            corrected_type, corrected_cat = self._validate_labels(
+                llm_result.get("corrected_type", "Expense"),
+                llm_result.get("corrected_category", "Other"),
+            )
+
+            return {
+                "type": corrected_type,
+                "category": corrected_cat,
+                "amount": llm_result.get("corrected_amount", spacy_prediction.get("amount", "Unknown")),
+                "is_correct": llm_result.get("is_correct", False),
+                "was_corrected": not llm_result.get("is_correct", False),
+                "reason": llm_result.get("reason", ""),
+            }
+
+        except json.JSONDecodeError as e:
+            logging.error(f"Failed to parse LLM JSON response: {str(e)}")
+            return {
+                "type": spacy_prediction["type"],
+                "category": spacy_prediction["category"],
+                "amount": spacy_prediction.get("amount", "Unknown"),
+                "is_correct": True,  # Trust spaCy if LLM fails
+                "was_corrected": False,
+                "reason": "LLM verification failed, using spaCy prediction",
+            }
+        except Exception as e:
+            logging.error(f"LLM verification error: {str(e)}")
+            return {
+                "type": spacy_prediction["type"],
+                "category": spacy_prediction["category"],
+                "amount": spacy_prediction.get("amount", "Unknown"),
+                "is_correct": True,
+                "was_corrected": False,
+                "reason": "LLM verification error",
+            }
+
+    def predict_category_and_amount(self, text: str) -> Dict:
+        """
+        Main prediction method:
+        1. spaCy predicts type and category
+        2. Extract monetary amount
+        3. LLM verifies and corrects if needed
+        4. Return final categorization
         """
         try:
-            # Predict type (Expense/Income)
+            # Step 1: Get spaCy predictions
             doc_type = self.nlp_type(text)
             predicted_type = max(doc_type.cats, key=doc_type.cats.get)
 
-            # Predict category (Food, Travel, etc.)
             doc_cat = self.nlp_cat(text)
             predicted_cat = max(doc_cat.cats, key=doc_cat.cats.get)
 
-            # Extract amount (via regex/NER)
+            # Validate spaCy outputs
+            predicted_type, predicted_cat = self._validate_labels(predicted_type, predicted_cat)
+
+            # Step 2: Extract amount
             amount = self.extract_money(text) or "Unknown"
 
-            # Log the entire decision for transparency (Responsible AI)
+            spacy_prediction = {
+                "type": predicted_type,
+                "category": predicted_cat,
+                "amount": amount,
+            }
+
+            logging.info(f"spaCy prediction for '{text}': {spacy_prediction}")
+
+            # Step 3: Verify with LLM and get corrections
+            final_result = self._verify_with_llm(text, spacy_prediction)
+
             logging.info(
-                f"Input: {text} | Type: {predicted_type} | Category: {predicted_cat} | Amount: {amount} | "
-                f"Type scores: {doc_type.cats} | Category scores: {doc_cat.cats}"
+                f"Final result for '{text}': type={final_result['type']}, "
+                f"category={final_result['category']}, corrected={final_result['was_corrected']}"
             )
 
-            # Return structured prediction
-            return {"type": predicted_type, "category": predicted_cat, "amount": amount}
+            return {
+                "type": final_result["type"],
+                "category": final_result["category"],
+                "amount": final_result["amount"]
+            }
 
         except Exception as e:
-            # Log failure if prediction fails
-            logging.error("Prediction failed for input '%s': %s", text, str(e))
+            logging.error(f"Prediction failed for '{text}': {str(e)}")
             raise

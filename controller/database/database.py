@@ -70,7 +70,7 @@ class Budget(Base):
     """
     __tablename__ = "budgets"
 
-    id = Column(Integer, primary_key=True)
+    budget_id = Column(Integer, primary_key=True)
     user_id = Column(String, index=True)
     category = Column(String, index=True, nullable=False)
     monthly_limit = Column(Integer, nullable=False)
@@ -100,10 +100,10 @@ class Transaction(Base):
     """
     __tablename__ = "transactions"
 
-    id = Column(Integer, primary_key=True)
+    transactions_id = Column(Integer, primary_key=True)
     user_id = Column(String, index=True, nullable=False)
     date = Column(String, default=lambda: datetime.date.today().isoformat(), nullable=False)
-    description = Column(String, nullable=False)
+    user_request = Column(String, nullable=False)
     amount = Column(Integer, nullable=False)  # Consider Float or Numeric for production
     type = Column(String, nullable=False) # e.g., 'Expense', 'Income'
     category = Column(String, nullable=False)
