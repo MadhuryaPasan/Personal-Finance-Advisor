@@ -8,14 +8,7 @@ client = OpenAI(
 )
 
 
-# already configured in your app
-client = OpenAI(
-    base_url="http://localhost:11434/v1",
-    api_key="dummy_key",
-)
-
-
-def summarize_transactions(transactions, model="gemma3:270m"):
+def summarize_transactions(transactions, model="gemma3:1b"):
     """
     Summarize recent transactions using Ollama LLM via OpenAI API.
 
@@ -40,8 +33,8 @@ def summarize_transactions(transactions, model="gemma3:270m"):
     response = client.chat.completions.create(
         model=model,
         messages=[
-            {"role": "system", "content": "You are a financial assistant. Summarize the transactions into a short, clear financial report."},
-            {"role": "user", "content": f"Here are my recent transactions:\n{transactions_text}\n\nSummarize them in a few bullet points and give me a short insight."}
+            {"role": "system", "content": "You are a financial assistant. Provide practical suggestions based on the budget status and transactions. Summarize in a few bullet points, include tips to improve, and consider any goal impact."},
+            {"role": "user", "content": f"Here are my recent transactions:\n{transactions_text}\n\nSummarize them and give me a short insight."}
         ]
     )
     return response.choices[0].message.content.strip()
