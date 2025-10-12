@@ -64,9 +64,9 @@ class GoalCreateRequest(BaseModel):
     user_request: str
 
 class GoalTrackRequest(BaseModel):
-    goal: Dict[str, Any]
+    user_id:str
+    user_request: str
     recent_transactions: List[Dict[str, Any]]  # From ExpenseCategorizer
-    additional_savings: Optional[float] = 0.0
 
 # Pydantic models for BudgetTracker
 class BudgetSetRequest(BaseModel):
@@ -128,9 +128,9 @@ async def track_goal(request: GoalTrackRequest, username: str = Depends(verify_t
     try:
         # TODO: Validate goal belongs to user via DB
         result = saving_agent.track_progress(
-            request.goal,
-            request.recent_transactions,
-            request.additional_savings
+            request.user_id,
+            request.user_request,
+            request.recent_transactions
         )
         return result
     except Exception as e:
