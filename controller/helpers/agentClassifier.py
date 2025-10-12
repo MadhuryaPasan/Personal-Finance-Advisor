@@ -34,179 +34,249 @@ def classify_agent(user_message: str) -> str:
     Uses Gemma 3 to decide which tool need to use
     """
     system_prompt = f"""
-You are an agent selector designed to classify user requests into one of the available agents.
-You MUST respond with a single, valid JSON object, with absolutely no markdown, extra text, or conversation outside of the JSON.
+    You are an agent selector designed to classify user requests into one of the available agents.
+    You MUST respond with a single, valid JSON object, with absolutely no markdown, extra text, or conversation outside of the JSON.
 
-Available agents:
-- "expense_categorizer": Select this if the user is asking to categorize, classify, or analyze a financial transaction or expense.
-- "all_budget_details": Select this if the user is asking to retrieve or show budget details for a specific category or all categories.
-- "get_all_transactions": Select this if the user is asking to retrieve or show transactions for a specific category or all categories.
-- "add_new_transaction": Select this if the user wants to add a new transaction (expense or income).
-- "add_new_budget": Select this if the user wants to create or set a new budget for a category or period.
-- "track_budget": Select this if the user wants to check budget progress, remaining balance, or track spending vs. budget.
-- "general": Select this for all other requests, including general conversation, questions, or advice.
+    Available agents:
+    - "expense_categorizer": Select this if the user is asking to categorize, classify, or analyze a financial transaction or expense.
+    - "all_budget_details": Select this if the user is asking to retrieve or show budget details for a specific category or all categories.
+    - "get_all_transactions": Select this if the user is asking to retrieve or show transactions for a specific category or all categories.
+    - "add_new_transaction": Select this if the user wants to add a new transaction (expense or income).
+    - "add_new_budget": Select this if the user wants to create or set a new budget for a category or period.
+    - "track_budget": Select this if the user wants to check budget progress, remaining balance, or track spending vs. budget.
+    - "add_new_goal": Select this if the user wants to set or create a new financial goal.
+    - "get_all_goals": Select this if the user wants to retrieve, list, or show all financial goals.
+    - "track_goal": Select this if the user is asking to check or update the progress of a specific financial goal (e.g., “vacation goal progress”, “check my emergency fund goal”, or “I added savings towards a goal”).
+    - "general": Select this for all other requests, including general conversation, questions, or advice.
+
+    TOOL OUTPUT FORMAT:
+    Output ONLY a single, valid JSON object (no markdown, no extra text).
+
+    1.  If "expense_categorizer" is selected:
+        - "args" must contain the key "return_query".
+        - The value must be a CONCISE SUMMARY of the transaction extracted from the user input (remove classifying verbs like "categorize this").
+
+    2.  If "all_budget_details" is selected:
+        - If the user specifies a category (one of ["Food", "Transport", "Rent", "Entertainment", "Shopping", "Bills", "Salary", "Freelance", "Sale", "Investment", "Refund"]), return the EXACT ORIGINAL USER INPUT for "return_query".
+        - If the user requests all budget details without specifying a category (e.g., "Show me all budget details", "Show me my budget details", "Show budget"), you MUST set "return_query" to the string "None".
+
+    3.  If "get_all_transactions" is selected:
+        - If the user specifies a category (one of ["Food", "Transport", "Rent", "Entertainment", "Shopping", "Bills", "Salary", "Freelance", "Sale", "Investment", "Refund"]), return the EXACT ORIGINAL USER INPUT for "return_query".
+        - If the user requests all transactions without a category (e.g., "Show me all transactions", "Show transactions"), you MUST set "return_query" to the string "None".
+
+    4.  If "add_new_transaction" is selected:
+        - "args" must contain the key "return_query".
+        - The value must be a CONCISE SUMMARY of the transaction extracted from the user input (remove classifying verbs like "Add this").
+
+    5.  If "add_new_budget" is selected:
+        - "args" must contain the key "return_query".
+        - The value must be a CONCISE SUMMARY of the transaction extracted from the user input (remove classifying verbs like "Add this").
+
+    6.  If "track_budget" is selected:
+        - "args" must contain the key "return_query".
+        - The value must be the EXACT ORIGINAL USER INPUT.
+
+    7.  If "add_new_goal" is selected:
+        - "args" must contain the key "return_query".
+        - The value must be a CONCISE SUMMARY of the goal extracted from the user input (e.g., remove verbs like "set a goal for").
+
+    8.  If "get_all_goals" is selected:
+        - "args" must contain the key "return_query".
+        - The value must be "None" if the user is asking for all goals (e.g., "Show my goals", "Get all goals", "List goals").
+
+    9.  If "track_goal" is selected:
+        - "args" must contain the key "return_query".
+        - The value must be the EXACT ORIGINAL USER INPUT (e.g., "Tell me about my vacation goal progress", "Tell me about my vacation goal progress and also I saved Rs. 1000 additionally").
+
+    10.  If "general" is selected:
+        - "args" must contain the key "return_query".
+        - The value must be the EXACT ORIGINAL USER INPUT.
 
 
-TOOL OUTPUT FORMAT:
-Output ONLY a single, valid JSON object (no markdown, no extra text).
+    EXAMPLES:
 
-1.  If "expense_categorizer" is selected:
-    - "args" must contain the key "return_query".
-    - The value must be a CONCISE SUMMARY of the transaction extracted from the user input (remove classifying verbs like "categorize this").
-
-2.  If "all_budget_details" is selected:
-    - If the user specifies a category (one of ["Food", "Transport", "Rent", "Entertainment", "Shopping", "Bills", "Salary", "Freelance", "Sale", "Investment", "Refund"]), return the EXACT ORIGINAL USER INPUT for "return_query".
-    - If the user requests all budget details without specifying a category (e.g., "Show me all budget details", "Show me my budget details", "Show budget"), you MUST set "return_query" to the string "None".
-
-3.  If "get_all_transactions" is selected:
-    - If the user specifies a category (one of ["Food", "Transport", "Rent", "Entertainment", "Shopping", "Bills", "Salary", "Freelance", "Sale", "Investment", "Refund"]), return the EXACT ORIGINAL USER INPUT for "return_query".
-    - If the user requests all transactions without a category (e.g., "Show me all transactions", "Show transactions"), you MUST set "return_query" to the string "None".
-
-4.  If "add_new_transaction" is selected:
-    - "args" must contain the key "return_query".
-    - The value must be a CONCISE SUMMARY of the transaction extracted from the user input (remove classifying verbs like "Add this").
-
-5.  If "add_new_budget" is selected:
-    - "args" must contain the key "return_query".
-    - The value must be a CONCISE SUMMARY of the transaction extracted from the user input (remove classifying verbs like "Add this").
-
-6.  If "track_budget" is selected:
-    - "args" must contain the key "return_query".
-    - The value must be the EXACT ORIGINAL USER INPUT.
-
-7.  If "general" is selected:
-    - "args" must contain the key "return_query".
-    - The value must be the EXACT ORIGINAL USER INPUT.
-
-
-EXAMPLES:
-
-User: categorize this car service rs 1000
-Response:
-{{
-    "tool_name": "expense_categorizer",
-    "args": {{
-        "return_query": "car service rs 1000"
+    User: categorize this car service rs 1000
+    Response:
+    {{
+        "tool_name": "expense_categorizer",
+        "args": {{
+            "return_query": "car service rs 1000"
+        }}
     }}
-}}
 
-User: please classify this transaction - lunch 500
-Response:
-{{
-    "tool_name": "expense_categorizer",
-    "args": {{
-        "return_query": "lunch 500"
+    User: please classify this transaction - lunch 500
+    Response:
+    {{
+        "tool_name": "expense_categorizer",
+        "args": {{
+            "return_query": "lunch 500"
+        }}
     }}
-}}
 
-User: Show me my Food budget
-Response:
-{{
-    "tool_name": "all_budget_details",
-    "args": {{
-        "return_query": "Show me my Food budget"
+    User: Show me my Food budget
+    Response:
+    {{
+        "tool_name": "all_budget_details",
+        "args": {{
+            "return_query": "Show me my Food budget"
+        }}
     }}
-}}
 
-User: Show me my budget details
-Response:
-{{
-    "tool_name": "all_budget_details",
-    "args": {{
-        "return_query": "None"
+    User: Show me my budget details
+    Response:
+    {{
+        "tool_name": "all_budget_details",
+        "args": {{
+            "return_query": "None"
+        }}
     }}
-}}
 
-User: Show all budget details
-Response:
-{{
-    "tool_name": "all_budget_details",
-    "args": {{
-        "return_query": "None"
+    User: Show all budget details
+    Response:
+    {{
+        "tool_name": "all_budget_details",
+        "args": {{
+            "return_query": "None"
+        }}
     }}
-}}
 
-User: Show budget
-Response:
-{{
-    "tool_name": "all_budget_details",
-    "args": {{
-        "return_query": "None"
+    User: Show budget
+    Response:
+    {{
+        "tool_name": "all_budget_details",
+        "args": {{
+            "return_query": "None"
+        }}
     }}
-}}
 
-User: Show me my Food transactions
-Response:
-{{
-    "tool_name": "get_all_transactions",
-    "args": {{
-        "return_query": "Show me my Food transactions"
+    User: Show me my Food transactions
+    Response:
+    {{
+        "tool_name": "get_all_transactions",
+        "args": {{
+            "return_query": "Show me my Food transactions"
+        }}
     }}
-}}
 
-User: Show me all transactions
-Response:
-{{
-    "tool_name": "get_all_transactions",
-    "args": {{
-        "return_query": "None"
+    User: Show me all transactions
+    Response:
+    {{
+        "tool_name": "get_all_transactions",
+        "args": {{
+            "return_query": "None"
+        }}
     }}
-}}
 
-User: Add a new transaction: Salary 5000
-Response:
-{{
-    "tool_name": "add_new_transaction",
-    "args": {{
-        "return_query": "Salary 5000"
+    User: Add a new transaction: Salary 5000
+    Response:
+    {{
+        "tool_name": "add_new_transaction",
+        "args": {{
+            "return_query": "Salary 5000"
+        }}
     }}
-}}
 
-User: Set a new budget for Food Rs 1000
-Response:
-{{
-    "tool_name": "add_new_budget",
-    "args": {{
-        "return_query": "Foods for Rs 1000"
+    User: Set a new budget for Food Rs 1000
+    Response:
+    {{
+        "tool_name": "add_new_budget",
+        "args": {{
+            "return_query": "Foods for Rs 1000"
+        }}
     }}
-}}
 
-User: Track my Transport budget
-Response:
-{{
-    "tool_name": "track_budget",
-    "args": {{
-        "return_query": "Track my Transport budget"
+    User: Track my Transport budget
+    Response:
+    {{
+        "tool_name": "track_budget",
+        "args": {{
+            "return_query": "Track my Transport budget"
+        }}
     }}
-}}
 
-User: How are you?
-Response:
-{{
-    "tool_name": "general",
-    "args": {{
-        "return_query": "How are you?"
+    User: Set a goal to save 5000 for vacation
+    Response:
+    {{
+        "tool_name": "add_new_goal",
+        "args": {{
+            "return_query": "save 5000 for vacation"
+        }}
     }}
-}}
 
-User: Tell me a joke about money.
-Response:
-{{
-    "tool_name": "general",
-    "args": {{
-        "return_query": "Tell me a joke about money."
+    User: Add a new goal: Emergency fund Rs 10000
+    Response:
+    {{
+        "tool_name": "add_new_goal",
+        "args": {{
+            "return_query": "Emergency fund Rs 10000"
+        }}
     }}
-}}
 
-User: What is the definition of inflation?
-Response:
-{{
-    "tool_name": "general",
-    "args": {{
-        "return_query": "What is the definition of inflation?"
+    User: Show me all my goals
+    Response:
+    {{
+        "tool_name": "get_all_goals",
+        "args": {{
+            "return_query": "None"
+        }}
     }}
-}}
-"""
+
+    User: Get all goals
+    Response:
+    {{
+        "tool_name": "get_all_goals",
+        "args": {{
+            "return_query": "None"
+        }}
+    }}
+
+    User: Tell me about my vacation goal progress
+    Response:
+    {{
+        "tool_name": "track_goal",
+        "args": {{
+            "return_query": "Tell me about my vacation goal progress"
+        }}
+    }}
+
+    User: Tell me about my vacation goal progress and also i saved Rs. 1000 additionally
+    Response:
+    {{
+        "tool_name": "track_goal",
+        "args": {{
+            "return_query": "Tell me about my vacation goal progress and also i saved Rs. 1000 additionally"
+        }}
+    }}
+
+    User: How are you?
+    Response:
+    {{
+        "tool_name": "general",
+        "args": {{
+            "return_query": "How are you?"
+        }}
+    }}
+
+    User: Tell me a joke about money.
+    Response:
+    {{
+        "tool_name": "general",
+        "args": {{
+            "return_query": "Tell me a joke about money."
+        }}
+    }}
+
+    User: What is the definition of inflation?
+    Response:
+    {{
+        "tool_name": "general",
+        "args": {{
+            "return_query": "What is the definition of inflation?"
+        }}
+    }}
+    """
+
+
 
     response = client.chat.completions.create(
         model=model,
@@ -264,6 +334,10 @@ Response:
                 return_query = user_message
         elif tool_name == "track_budget":
             return_query = user_message
+        elif tool_name == "add_new_goal":
+            return_query = user_message
+        elif tool_name == "get_all_goals":
+            return_query = 'None'
 
         # print(f"raw: {final_json_string}")
         # print(f"Agent to use: {tool_name}")
@@ -310,6 +384,7 @@ def agent_result_formatter(agent_result):
 
 def agent_responce (user_prompt:str) :
     tool_name, return_query = classify_agent(user_prompt)
+    print(tool_name)
     result = ""
     tool_name = tool_name.lower()
     if tool_name == "expense_categorizer":
@@ -367,6 +442,7 @@ def agent_responce (user_prompt:str) :
         
         
         
+        
     elif tool_name == "add_new_transaction":
         payload = {
             "user_id": user_id,
@@ -381,25 +457,58 @@ def agent_responce (user_prompt:str) :
             del response_data['user_id']
         result = agent_result_formatter(f"this is the details of new transaction and this data is succesfully saved : {response_data}")
         
+        
+        
+        
     elif tool_name == "add_new_budget":
         payload = {
             "user_id": user_id,
             "user_request": return_query
         }
-        track_budget_response = requests.post(
+        new_budget_response = requests.post(
             create_budget_api, json=payload, headers=headers
         )
-        response_data = track_budget_response.json()
+        response_data = new_budget_response.json()
         if 'user_id' in response_data:
             del response_data['user_id']
         result = agent_result_formatter(f"this is the details of setting up new budget plan and this data is succesfully saved  : {response_data}")
+        
+    elif tool_name == "add_new_goals":
+        payload = {
+        "user_id": user_id,
+        "user_request": return_query
+        }
+        new_goal_response = requests.post(
+            create_goal_api, json=payload, headers=headers
+        )
+        response_data = new_goal_response.json()
+        if 'user_id' in response_data:
+            del response_data['user_id']
+        result = agent_result_formatter(f"this is the details of setting up new Goal and this data is succesfully saved  : {response_data}")
+        
+    elif tool_name == "get_all_goals":
+        payload = {
+                    "user_id":user_id
+                }
+        get_get_response = requests.get(
+            get_goal_api, json=payload, headers=headers
+        )
+        response_data = get_get_response.json()
+        for result in response_data:
+            if 'user_id' in result:
+                del result['user_id']
+        result = agent_result_formatter(f"This is the list of goals previously entered by the user.  : {response_data}")
+        print(result)
+        print(response_data)
+
+    
 
     elif tool_name == "track_budget":
         payload = {"transaction": return_query}
         response = requests.post(predict_api_url, json=payload, headers=headers)
         classify_agent_result = response.json()
         classify_agent_result_category = classify_agent_result["category"]
-        payload = {"user_id": user_id, "type": "", "category": "Transport"}
+        payload = {"user_id": user_id, "type": "", "category": classify_agent_result_category}
         get_transaction_response = requests.get(
             get_transaction_api, json=payload, headers=headers
         )
@@ -407,11 +516,12 @@ def agent_responce (user_prompt:str) :
 
         payload = {
             "budget": {
-                "budget_id": 1,
-                "category": "Transport",
-                "monthly_limit": 500.0,
-                "start_date": "2025-09-01",
-                "current_spent": 0.0,
+                # "budget_id": 1,
+                "user_id": user_id,
+                "category": classify_agent_result_category,
+                # "monthly_limit": 500.0,
+                # "start_date": "2025-09-01",
+                # "current_spent": 0.0,
             },
             "recent_transactions": get_transaction_result,
         }
@@ -419,6 +529,24 @@ def agent_responce (user_prompt:str) :
             track_budget_api, json=payload, headers=headers
         )
         response_data = track_budget_response.json()
+        result = response_data['suggestion']
+        
+    elif tool_name == "track_goal": 
+        payload = {"user_id": user_id, "type": "", "category": ""}
+        get_transaction_response = requests.get(
+            get_transaction_api, json=payload, headers=headers
+        )
+        get_transaction_result = get_transaction_response.json()
+
+        payload = {
+                "user_id" : "104283579482555329026",
+                "user_request" : return_query,
+                "recent_transactions":get_transaction_result
+            }
+        track_goal_response = requests.post(
+            track_goal_api, json=payload, headers=headers
+        )
+        response_data = track_goal_response.json()
         result = response_data['suggestion']
 
     elif tool_name == "general":
@@ -430,6 +558,8 @@ def agent_responce (user_prompt:str) :
             ],
         )
         result = response.choices[0].message.content.strip()
+    else:
+        result = "Something went wrong. Tool selection failed. Please try again later."
     
     return result
     

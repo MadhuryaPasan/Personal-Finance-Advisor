@@ -4,14 +4,10 @@ from typing import Dict, List, Any, Optional
 import datetime as dt
 from sqlalchemy.exc import IntegrityError
 from controller.database.database import *
-
 # Import the new helper
 from controller.helpers.budgetTrackerSuggestion import summarize_budget_suggestions
-
 from agents.ExpenseCategorizer import ExpenseCategorizerAgent
-
-import os 
-
+import os
 # Resolve model directories for ExpenseCategorizer
 base_dir = os.path.dirname(__file__)
 type_model_dir = os.path.normpath(
@@ -20,33 +16,26 @@ type_model_dir = os.path.normpath(
 cat_model_dir = os.path.normpath(
     os.path.join(base_dir, "..", "models", "expense_income_category")
 )
-
 # Instantiate agents
 expense_agent = ExpenseCategorizerAgent(
     type_model_path=type_model_dir, cat_model_path=cat_model_dir
 )
-
 # Logging for transparency
 logging.basicConfig(
     filename="budget_tracker.log",
     level=logging.INFO,
     format="%(asctime)s - %(message)s",
 )
-
 # Regex for extracting numeric amount (handles "rs 1,000", "$500", etc.)
 amount_re = re.compile(r"([0-9][0-9,]*(\.[0-9]+)?)")
-
-
 class BudgetTrackerAgent:
     """
     Agent for setting and tracking budgets per category.
     Integrates with ExpenseCategorizer (sums expenses) and SavingGoalPlanner (checks impact on goals).
     """
-
     def init(self):
         # Placeholder: In production, connect to SQLite DB for persistent budgets
         pass
-
     def set_budget(
         self,
         user_id: str,
@@ -54,6 +43,7 @@ class BudgetTrackerAgent:
     ) -> Dict[str, Any]:
         """
         Set a monthly budget for a category.
+        Returns budget details on success or an error message if budget already exists.
         """
         try:
             # Initialize a new session
@@ -71,11 +61,32 @@ class BudgetTrackerAgent:
             monthly_limit = amount
             if monthly_limit < 0:
                 raise ValueError("Monthly limit must be non-negative.")
+            
+            # CHECK IF BUDGET ALREADY EXISTS FOR THIS USER AND CATEGORY
+            existing_budget = session.query(Budget).filter(
+                Budget.user_id == user_id,
+                Budget.category == category
+            ).first()
+            
+            if existing_budget:
+                session.close()
+                error_message = f"A budget for category '{category}' already exists for this user. Current limit: {existing_budget.monthly_limit}"
+                logging.warning(error_message)
+                return {
+                    "success": False,
+                    "message": error_message,
+                    "existing_budget": {
+                        "budget_id": existing_budget.budget_id,
+                        "category": existing_budget.category,
+                        "monthly_limit": existing_budget.monthly_limit,
+                        "current_spent": existing_budget.current_spent,
+                        "start_date": existing_budget.start_date,
+                    }
+                }
+            
             start_date = dt.datetime.now().strftime(
                 "%Y-%m-%d"
             )
-
-
             # Create a new Budget object
             new_budget = Budget(
                 user_id=user_id,
@@ -84,15 +95,13 @@ class BudgetTrackerAgent:
                 start_date=start_date,
                 current_spent=0.0,
             )
-
             # Add the new budget to the session and commit
             session.add(new_budget)
             session.commit()
-
             # Optional: Refresh to get the ID if needed
             session.refresh(new_budget)
-
             result = {
+                "success": True,
                 "budget_id": new_budget.budget_id,
                 "user_id": new_budget.user_id,
                 "category": new_budget.category,
@@ -123,7 +132,7 @@ class BudgetTrackerAgent:
 
     def track_budget(
         self,
-        budget: Dict[str, Any],
+        get_budget: Dict[str, Any],
         recent_transactions: List[Dict[str, Any]],  # From ExpenseCategorizer
         # Optional: From SavingGoalPlanner
         goal: Optional[Dict[str, Any]] = None,
@@ -133,6 +142,24 @@ class BudgetTrackerAgent:
         Example: recent_transactions = [{"type": "Expense", "category": "Transport", "amount": "rs 1000", ...}]
         """
         try:
+            session = SessionLocal()
+            result = session.query(Budget).filter(
+                Budget.user_id == get_budget["user_id"],
+                Budget.category == get_budget["category"]
+            ).first()
+            budget = {}
+            if result:
+                budget = {
+                    "budget_id": result.budget_id,
+                    "user_id": result.user_id,
+                    "category": result.category,
+                    "monthly_limit": result.monthly_limit,
+                    "current_spent": result.current_spent,
+                    "start_date": result.start_date,
+                }
+            else:
+                raise ValueError(f"No budget found for category: {get_budget['category']}")
+                
             current_spent = 0.0
             for tx in recent_transactions:
                 if (
@@ -197,6 +224,9 @@ class BudgetTrackerAgent:
         except Exception as e:
             logging.error(f"Budget tracking failed: {str(e)}")
             raise
+        finally:
+            if "session" in locals() and session:
+                session.close()
 
     def get_budgets(
         self, user_id: str, category: Optional[str] = None
