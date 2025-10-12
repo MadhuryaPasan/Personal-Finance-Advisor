@@ -87,6 +87,70 @@ class SavingGoalPlannerAgent:
             logging.error(f"LLM extraction error: {str(e)}")
             raise
 
+    def _extract_track_progress_details_from_llm(
+        self, user_request: str, available_goals: List[Dict[str, Any]]
+    ) -> Dict[str, Any]:
+        """
+        Use LLM to match goal and extract tracking details from user request.
+        
+        Args:
+            user_request: Natural language request for tracking progress
+            available_goals: List of dicts with 'id' and 'goal_name' from database
+        
+        Returns:
+            Dictionary with keys: goal_id, additional_savings
+        """
+        # Format available goals for LLM
+        goals_text = "\n".join([f"- ID: {g['id']}, Name: {g['goal_name']}" for g in available_goals])
+        
+        system_prompt = f"""You are a financial assistant that matches saving goals and extracts tracking details from user requests.
+
+        Available goals in the database:
+{goals_text}
+
+        Extract and return a JSON object with these fields:
+        - "goal_id": The ID of the most suitable matching goal (integer)
+        - "additional_savings": Any new savings amount mentioned (float, defaults to 0 if not mentioned)
+
+        Rules:
+        1. Semantically match the user's goal mention to the most suitable available goal
+        2. The user's goal name may be slightly different from the database goal name
+        3. Return the goal_id (not the goal name) of the best match
+        4. If user mentions saving, contribution, or deposit amount, extract as additional_savings
+        5. Extract only numeric values for amounts (no currency symbols)
+        6. If additional_savings is not mentioned, set it to 0
+        7. Return ONLY valid JSON, no additional text"""
+
+        try:
+            response = self.client.chat.completions.create(
+                model=self.llm_model,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {
+                        "role": "user",
+                        "content": f"Extract tracking details: {user_request}",
+                    },
+                ],
+                temperature=0.0,
+                response_format={"type": "json_object"},
+            )
+            
+            # Parse LLM response
+            raw_content = response.choices[0].message.content.strip()
+            content = raw_content.lstrip("`").lstrip("json").lstrip("\n").rstrip("`")
+            extracted_data = json.loads(content)
+
+            logging.info(f"LLM extracted tracking details: {extracted_data}")
+
+            return extracted_data
+
+        except json.JSONDecodeError as e:
+            logging.error(f"Failed to parse LLM JSON response: {str(e)}")
+            raise ValueError("Failed to parse tracking details from LLM response")
+        except Exception as e:
+            logging.error(f"LLM extraction error: {str(e)}")
+            raise
+    
     def create_goal(
         self,
         user_id: str,
@@ -234,25 +298,72 @@ class SavingGoalPlannerAgent:
 
     def track_progress(
         self,
-        goal: Dict[str, Any],
-        # List of ExpenseCategorizer outputs
+        user_id: str,
+        user_request: str,
         recent_transactions: List[Dict[str, Any]],
-        additional_savings: float = 0.0,
     ) -> Dict[str, Any]:
         """
         Track progress, integrating transaction data to adjust savings.
-        Example: recent_transactions = [{"type": "Expense", "category": "Transport", "amount": "rs 1000", ...}]
+        Uses LLM to semantically match goal and extract additional savings from user request.
+        
+        Args:
+            user_id: User identifier
+            user_request: Natural language request for tracking (e.g., "I saved 500 for my vacation")
+            recent_transactions: List of recent transactions
+        
+        Returns:
+            Dictionary with updated progress information
         """
+        session = SessionLocal()
         try:
-            # Convert additional_savings to float
+            # Step 1: Get all available goals for the user from database
+            available_goals_db = (
+                session.query(SavingGoal).filter(SavingGoal.user_id == user_id).all()
+            )
+            
+            if not available_goals_db:
+                raise ValueError(f"No saving goals found for user {user_id}")
+            
+            # Convert to format for LLM (ID and goal_name)
+            available_goals = [
+                {"id": g.id, "goal_name": g.goal_name}
+                for g in available_goals_db
+            ]
+            
+            logging.info(f"Available goals for user {user_id}: {available_goals}")
+            
+            # Step 2: Use LLM to match goal and extract tracking details
+            tracking_details = self._extract_track_progress_details_from_llm(
+                user_request, available_goals
+            )
+            
+            goal_id = tracking_details.get("goal_id")
+            if not goal_id:
+                raise ValueError("Could not match any goal from user request")
+            
             try:
-                additional_savings = float(additional_savings)
+                goal_id = int(goal_id)
             except (ValueError, TypeError):
-                raise ValueError(
-                    f"additional_savings must be a valid number, got: '{additional_savings}'"
-                )
-
-            # Calculate net impact from transactions (expenses subtract, income adds)
+                raise ValueError(f"Invalid goal_id returned from LLM: {goal_id}")
+            
+            try:
+                additional_savings = float(tracking_details.get("additional_savings", 0))
+            except (ValueError, TypeError):
+                additional_savings = 0
+                logging.info("additional_savings not specified, defaulting to 0")
+            
+            # Step 3: Fetch the goal from database using goal_id
+            goal = session.query(SavingGoal).filter(SavingGoal.id == goal_id).first()
+            
+            if not goal:
+                raise ValueError(f"Goal with ID {goal_id} not found in database")
+            
+            if goal.user_id != user_id:
+                raise ValueError(f"Goal {goal_id} does not belong to user {user_id}")
+            
+            logging.info(f"Matched goal: {goal.goal_name} (ID: {goal.id})")
+            
+            # Step 4: Calculate net impact from transactions
             net_impact = 0.0
             for tx in recent_transactions:
                 amount_value = tx.get("amount", "0")
@@ -261,39 +372,75 @@ class SavingGoalPlannerAgent:
                 if match:
                     amount = float(match.group(0).replace(",", ""))
                 else:
-                    amount = 0.0  # Default if parsing fails
+                    amount = 0.0
                     logging.warning(
                         f"Failed to parse amount '{amount_str}' in tx: {tx}"
                     )
 
                 if tx.get("type") == "Expense":
-                    net_impact -= amount  # Expenses reduce savings
+                    net_impact -= amount
                 elif tx.get("type") == "Income":
-                    net_impact += amount  # Income increases savings
-
-            updated_savings = goal["current_savings"] + additional_savings + net_impact
-            remaining = goal["target_amount"] - updated_savings
-            # 90% threshold
-            on_track = remaining <= 0 or updated_savings >= goal["target_amount"] * 0.9
-
-            summary = summarize_transactions(recent_transactions)
-
-            result = {
-                "goal_name": goal["goal_name"],
+                    net_impact += amount
+            
+            # Step 5: Calculate updated savings
+            updated_savings = goal.current_savings + additional_savings + net_impact
+            remaining = goal.target_amount - updated_savings
+            
+            # 90% threshold check
+            on_track = remaining <= 0 or updated_savings >= goal.target_amount * 0.9
+            
+            # Step 6: Generate summary with goal context
+            goal_info = {
+                "goal_name": goal.goal_name,
+                "target_amount": goal.target_amount,
+                "current_savings": goal.current_savings,
                 "updated_savings": updated_savings,
                 "remaining": remaining,
                 "on_track": on_track,
-                "suggestion": summary if not on_track else "You're on track!",
+                "deadline": goal.deadline,
+            }
+            summary = summarize_transactions(recent_transactions, goal=goal_info)
+            
+            result_markdown = f"""
+                \n\n
+                ---
+                Goal Id: {goal.id}\n
+                Goal Name: {goal.goal_name}\n
+                Current Savings: {goal.current_savings}\n
+                Additional Savings: {additional_savings}\n
+                Transaction Impact: {net_impact}\n
+                Updated Savings: {updated_savings}\n
+                Target Amount: {goal.target_amount}\n
+                Remaining: {remaining}\n
+                On Track: {on_track}\n
+                \n\n
+            """
+            
+            result = {
+                "goal_id": goal.id,
+                "goal_name": goal.goal_name,
+                "current_savings": goal.current_savings,
+                "additional_savings": additional_savings,
+                "transaction_impact": net_impact,
+                "updated_savings": updated_savings,
+                "target_amount": goal.target_amount,
+                "remaining": remaining,
+                "on_track": on_track,
+                "suggestion": result_markdown+"\n\n"+(summary if not on_track else "You're on track!"),
             }
 
             logging.info(f"Tracked progress: {result}")
             return result
+            
         except ValueError as e:
             logging.error(f"Progress tracking failed: {str(e)}")
             raise
         except Exception as e:
             logging.error(f"Progress tracking failed: {str(e)}")
             raise
+        finally:
+            if "session" in locals() and session:
+                session.close()
 
     def get_goals(self, user_id: str) -> List[Dict[str, Any]]:
         """
