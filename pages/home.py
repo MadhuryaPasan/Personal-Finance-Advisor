@@ -197,35 +197,47 @@ if st.user.is_logged_in:
             st.markdown(
                 """I'm your **Personal Finance Advisor**, here to help you make informed financial decisions.
                 """)
-            st.markdown("""
-                        **Common Prompts**
-                        
-                        ~~~ 
-                        categorize this car service RS.1000 
-                        ~~~
-                        ~~~ 
-                        Show me my Food budget list 
-                        ~~~
-                        ~~~ 
-                        Show all budget details
-                        ~~~
-                        ~~~ 
-                        Show me my Food transactions
-                        ~~~
-                        ~~~ 
-                        Show me all transactions
-                        ~~~
-                        ~~~ 
-                        Add a new transaction: Salary 5000
-                        ~~~
-                        ~~~ 
-                        Set a new budget for Food Rs 1000
-                        ~~~
-                        ~~~ 
-                        Track my Transport budget
-                        ~~~
-                        
-                        """)
+            with st.expander("Common Prompts"):
+                st.markdown("""
+
+                ~~~
+                Categorize this car service Rs. 1000
+                ~~~
+                ~~~
+                Show me my Food budget list
+                ~~~
+                ~~~
+                Show all budget details
+                ~~~
+                ~~~
+                Show me my Food transactions
+                ~~~
+                ~~~
+                Show me all transactions
+                ~~~
+                ~~~
+                Add a new transaction: Salary Rs. 5000
+                ~~~
+                ~~~
+                Set a new budget for Food Rs. 1000
+                ~~~
+                ~~~
+                Track my Transport budget
+                ~~~
+                ~~~
+                Set Rs. 5000 for my vacation with a deadline of 2025-11-12
+                ~~~
+                ~~~
+                Show me all my goals
+                ~~~
+                ~~~
+                Tell me about my vacation goal progress
+                ~~~
+                ~~~
+                Tell me about my vacation goal progress, and I also saved an additional Rs. 1000
+                ~~~
+                """)
+
             st.divider()
 
 
