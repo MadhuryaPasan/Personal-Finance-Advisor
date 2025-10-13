@@ -202,6 +202,30 @@ def classify_agent(user_message: str) -> str:
             "return_query": "save 5000 for vacation"
         }}
     }}
+    User: Set Rs. 5000 for my vacation goal with a deadline of 2025-11-12
+    Response:
+    {{
+        "tool_name": "add_new_goal",
+        "args": {{
+            "return_query": "save 5000 for vacation"
+        }}
+    }}
+    User: Set Rs. 5000 for my vacation goal with a deadline of 2025-11-12
+    Response:
+    {{
+        "tool_name": "add_new_goal",
+        "args": {{
+            "return_query": "save 5000 for vacation"
+        }}
+    }}
+    User: Set goal to save Rs 150,000 for car service bt 2022-12-15
+    Response:
+    {{
+        "tool_name": "add_new_goal",
+        "args": {{
+            "return_query": "save 5000 for vacation"
+        }}
+    }}
 
     User: Add a new goal: Emergency fund Rs 10000
     Response:
@@ -291,13 +315,13 @@ def classify_agent(user_message: str) -> str:
     raw_content = response.choices[0].message.content.strip()
 
     # 1. Remove the opening markdown block marker
-    if raw_content.startswith("```json"):
+    if raw_content.startswith("json"):
         content = raw_content.lstrip("`\n").lstrip("json\n")
     else:
         content = raw_content
 
     # 2. Remove the closing markdown block marker
-    if content.endswith("```"):
+    if content.endswith(""):
         final_json_string = content.rstrip("`")
     else:
         final_json_string = content
@@ -356,13 +380,13 @@ def agent_result_formatter(agent_result):
     Your primary role is to process and present structured financial data to users.
 
     Follow these instructions precisely:
-    1. Always present the provided data in a clear, well-formatted **table** with descriptive headers.
-    2. After the table, provide a **concise summary** of the data.
-    3. Maintain a **professional and informative tone** at all times.
-    4. Do **not** include raw data, code, or JSON in your response. All information must be presented as formatted text.
-    5. Ensure that **all details** from the provided data are included in the response.
-    6. If you receive an error message, **return it exactly as it is** (e.g., “No items found for this user.”).
-    7. If no data is provided, **do not generate or assume any fake data**. Simply state that no data was provided.
+    1. Always present the provided data in a clear, well-formatted *table* with descriptive headers.
+    2. After the table, provide a *concise summary* of the data.
+    3. Maintain a *professional and informative tone* at all times.
+    4. Do *not* include raw data, code, or JSON in your response. All information must be presented as formatted text.
+    5. Ensure that *all details* from the provided data are included in the response.
+    6. If you receive an error message, *return it exactly as it is* (e.g., “No items found for this user.”).
+    7. If no data is provided, *do not generate or assume any fake data*. Simply state that no data was provided.
     """
 
 
@@ -473,7 +497,7 @@ def agent_responce (user_prompt:str) :
             del response_data['user_id']
         result = agent_result_formatter(f"this is the details of setting up new budget plan and this data is succesfully saved  : {response_data}")
         
-    elif tool_name == "add_new_goals":
+    elif tool_name == "add_new_goal":
         payload = {
         "user_id": user_id,
         "user_request": return_query
@@ -539,7 +563,7 @@ def agent_responce (user_prompt:str) :
         get_transaction_result = get_transaction_response.json()
 
         payload = {
-                "user_id" : "104283579482555329026",
+                "user_id" : user_id,
                 "user_request" : return_query,
                 "recent_transactions":get_transaction_result
             }
@@ -562,8 +586,3 @@ def agent_responce (user_prompt:str) :
         result = "Something went wrong. Tool selection failed. Please try again later."
     
     return result
-    
-    
-    
-    
-    

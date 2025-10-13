@@ -102,7 +102,7 @@ if st.user.is_logged_in:
             new_chat_disabled = st.session_state.is_new_chat
             if st.button(
                 "New Chat",
-                icon="🗨️",
+                icon="🗨",
                 disabled=new_chat_disabled,
                 use_container_width=True
             ):
@@ -195,7 +195,7 @@ if st.user.is_logged_in:
         if len(st.session_state.messages) == 0:
             st.subheader(f"Welcome {st.user.name}!")
             st.markdown(
-                """I'm your **Personal Finance Advisor**, here to help you make informed financial decisions.
+                """I'm your *Personal Finance Advisor*, here to help you make informed financial decisions.
                 """)
             with st.expander("Common Prompts"):
                 st.markdown("""
@@ -225,7 +225,7 @@ if st.user.is_logged_in:
                 Track my Transport budget
                 ~~~
                 ~~~
-                Set Rs. 5000 for my vacation with a deadline of 2025-11-12
+                Set Rs. 5000 for my vacation goal with a deadline of 2025-11-12
                 ~~~
                 ~~~
                 Show me all my goals
@@ -408,5 +408,3 @@ else:
     st.session_state["id_token"] = token
     st.switch_page("app.py")
     st.rerun()
-
-
