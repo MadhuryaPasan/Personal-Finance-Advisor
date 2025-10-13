@@ -216,7 +216,7 @@ if st.user.is_logged_in:
                 Show me all transactions
                 ~~~
                 ~~~
-                Add a new transaction: Salary Rs. 5000
+                Add a new transaction: uber ride for Rs. 5000
                 ~~~
                 ~~~
                 Set a new budget for Food Rs. 1000
