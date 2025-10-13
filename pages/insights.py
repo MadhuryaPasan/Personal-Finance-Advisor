@@ -325,13 +325,13 @@ def main():
             col1, col2, col3, col4 = st.columns(4)
             with col1:
                 st.metric("Total Budget",
-                          f"${budget_df['Monthly Limit'].sum():,.0f}")
+                          f"Rs{budget_df['Monthly Limit'].sum():,.0f}")
             with col2:
                 st.metric("Total Spent",
-                          f"${budget_df['Current Spent'].sum():,.0f}")
+                          f"Rs{budget_df['Current Spent'].sum():,.0f}")
             with col3:
                 st.metric("Total Remaining",
-                          f"${budget_df['Remaining'].sum():,.0f}")
+                          f"Rs{budget_df['Remaining'].sum():,.0f}")
             with col4:
                 avg_progress = budget_df['Progress %'].mean()
                 st.metric("Avg Progress", f"{avg_progress:.1f}%")
@@ -354,11 +354,11 @@ def main():
             if st.checkbox("Show detailed budget table"):
                 display_df = budget_df.copy()
                 display_df['Monthly Limit'] = display_df['Monthly Limit'].apply(
-                    lambda x: f"${x:,.0f}")
+                    lambda x: f"Rs{x:,.0f}")
                 display_df['Current Spent'] = display_df['Current Spent'].apply(
-                    lambda x: f"${x:,.0f}")
+                    lambda x: f"Rs{x:,.0f}")
                 display_df['Remaining'] = display_df['Remaining'].apply(
-                    lambda x: f"${x:,.0f}")
+                    lambda x: f"Rs{x:,.0f}")
                 display_df['Progress %'] = display_df['Progress %'].apply(
                     lambda x: f"{x:.1f}%")
 
@@ -403,15 +403,15 @@ def main():
                     with col2:
                         st.metric("Category", selected_budget['Category'])
                         st.metric("Monthly Limit",
-                                  f"${selected_budget['Monthly Limit']:,.0f}")
+                                  f"Rs{selected_budget['Monthly Limit']:,.0f}")
                         st.metric("Current Spent",
-                                  f"${selected_budget['Current Spent']:,.0f}")
+                                  f"Rs{selected_budget['Current Spent']:,.0f}")
                         st.metric(
-                            "Remaining", f"${selected_budget['Remaining']:,.0f}")
+                            "Remaining", f"Rs{selected_budget['Remaining']:,.0f}")
                         st.metric("Start Date", selected_budget['Start Date'])
 
     # ========================================================================
-    # TAB 2: SAVING GOALS
+                # TAB 2: SAVING GOALS
     # ========================================================================
     with tab2:
         st.subheader("Saving Goals Tracker")
@@ -425,13 +425,13 @@ def main():
             col1, col2, col3, col4 = st.columns(4)
             with col1:
                 st.metric("Total Target",
-                          f"${goals_df['Target Amount'].sum():,.0f}")
+                          f"Rs{goals_df['Target Amount'].sum():,.0f}")
             with col2:
                 st.metric("Total Saved",
-                          f"${goals_df['Current Savings'].sum():,.0f}")
+                          f"Rs{goals_df['Current Savings'].sum():,.0f}")
             with col3:
                 st.metric("Total Remaining",
-                          f"${goals_df['Remaining'].sum():,.0f}")
+                          f"Rs{goals_df['Remaining'].sum():,.0f}")
             with col4:
                 avg_progress = goals_df['Progress %'].mean()
                 st.metric("Avg Progress", f"{avg_progress:.1f}%")
@@ -448,17 +448,17 @@ def main():
             if st.checkbox("Show detailed goals table"):
                 display_goals_df = goals_df.copy()
                 display_goals_df['Target Amount'] = display_goals_df['Target Amount'].apply(
-                    lambda x: f"${x:,.0f}")
+                    lambda x: f"Rs{x:,.0f}")
                 display_goals_df['Current Savings'] = display_goals_df['Current Savings'].apply(
-                    lambda x: f"${x:,.0f}")
+                    lambda x: f"Rs{x:,.0f}")
                 display_goals_df['Remaining'] = display_goals_df['Remaining'].apply(
-                    lambda x: f"${x:,.0f}")
+                    lambda x: f"Rs{x:,.0f}")
                 display_goals_df['Progress %'] = display_goals_df['Progress %'].apply(
                     lambda x: f"{x:.1f}%")
                 display_goals_df['Monthly Needed'] = display_goals_df['Monthly Needed'].apply(
-                    lambda x: f"${x:,.0f}")
+                    lambda x: f"Rs{x:,.0f}")
                 display_goals_df['Weekly Needed'] = display_goals_df['Weekly Needed'].apply(
-                    lambda x: f"${x:,.0f}")
+                    lambda x: f"Rs{x:,.0f}")
 
                 st.dataframe(display_goals_df,
                              use_container_width=True, hide_index=True)
@@ -499,11 +499,11 @@ def main():
                     with col2:
                         st.metric("Goal Name", selected_goal['Goal Name'])
                         st.metric("Target Amount",
-                                  f"${selected_goal['Target Amount']:,.0f}")
+                                  f"Rs{selected_goal['Target Amount']:,.0f}")
                         st.metric("Current Savings",
-                                  f"${selected_goal['Current Savings']:,.0f}")
+                                  f"Rs{selected_goal['Current Savings']:,.0f}")
                         st.metric(
-                            "Remaining", f"${selected_goal['Remaining']:,.0f}")
+                            "Remaining", f"Rs{selected_goal['Remaining']:,.0f}")
                         st.metric("Deadline", selected_goal['Deadline'])
 
                     st.divider()
@@ -513,13 +513,13 @@ def main():
                     col1, col2, col3 = st.columns(3)
                     with col1:
                         st.metric(
-                            "Total Income", f"${selected_goal['Total Income']:,.0f}", delta="inflow")
+                            "Total Income", f"Rs{selected_goal['Total Income']:,.0f}", delta="inflow")
                     with col2:
                         st.metric(
-                            "Total Expenses", f"${selected_goal['Total Expenses']:,.0f}", delta="outflow", delta_color="inverse")
+                            "Total Expenses", f"Rs{selected_goal['Total Expenses']:,.0f}", delta="outflow", delta_color="inverse")
                     with col3:
                         st.metric("Net Savings",
-                                  f"${selected_goal['Net Savings']:,.0f}")
+                                  f"Rs{selected_goal['Net Savings']:,.0f}")
 
                     st.divider()
                     st.subheader("📊 Required Savings Rate")
@@ -528,14 +528,14 @@ def main():
                     col1, col2 = st.columns(2)
                     with col1:
                         st.info(f"""
-                        **Monthly Savings Needed:** ${selected_goal['Monthly Needed']:,.0f}
+                        **Monthly Savings Needed:** Rs{selected_goal['Monthly Needed']:,.0f}
                         
                         To reach your goal by {selected_goal['Deadline']}, you need to save this amount every month.
                         """)
 
                     with col2:
                         st.info(f"""
-                        **Weekly Savings Needed:** ${selected_goal['Weekly Needed']:,.0f}
+                        **Weekly Savings Needed:** Rs{selected_goal['Weekly Needed']:,.0f}
                         
                         Break it down to weekly savings targets to stay on track.
                         """)
@@ -577,12 +577,12 @@ def main():
 
             col1, col2, col3 = st.columns(3)
             with col1:
-                st.metric("Total Expenses", f"${expenses:,.0f}")
+                st.metric("Total Expenses", f"Rs{expenses:,.0f}")
             with col2:
-                st.metric("Total Income", f"${income:,.0f}")
+                st.metric("Total Income", f"Rs{income:,.0f}")
             with col3:
                 st.metric(
-                    "Net Balance", f"${income - expenses:,.0f}", delta=f"${income - expenses:,.0f}")
+                    "Net Balance", f"Rs{income - expenses:,.0f}", delta=f"Rs{income - expenses:,.0f}")
 
             st.divider()
 
@@ -633,7 +633,7 @@ def main():
             display_trans_df['Date'] = display_trans_df['Date'].dt.strftime(
                 '%Y-%m-%d')
             display_trans_df['Amount'] = display_trans_df['Amount'].apply(
-                lambda x: f"${x:,.0f}")
+                lambda x: f"Rs{x:,.0f}")
 
             st.dataframe(display_trans_df,
                          use_container_width=True, hide_index=True)
@@ -658,7 +658,7 @@ def main():
                     with col2:
                         st.metric("Category", selected_transaction['Category'])
                         st.metric(
-                            "Amount", f"${selected_transaction['Amount']:,.0f}")
+                            "Amount", f"Rs{selected_transaction['Amount']:,.0f}")
 
                     st.text_area(
                         "Description", value=selected_transaction['Description'], disabled=True)
