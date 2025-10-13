@@ -14,6 +14,7 @@ from controller.helpers.auth import *
 # AI CLIENT CONFIGURATION
 # ============================================================================
 
+
 def get_ai_client():
     """
     Initialize and return OpenAI-compatible client for Ollama server.
@@ -31,6 +32,7 @@ client = get_ai_client()
 # ============================================================================
 # SESSION STATE INITIALIZATION
 # ============================================================================
+
 
 def initialize_session_state():
     """
@@ -102,7 +104,7 @@ if st.user.is_logged_in:
             new_chat_disabled = st.session_state.is_new_chat
             if st.button(
                 "New Chat",
-                icon="🗨️",
+                icon="🗨",
                 disabled=new_chat_disabled,
                 use_container_width=True
             ):
@@ -113,7 +115,6 @@ if st.user.is_logged_in:
             # Load and display conversation history
             render_conversation_history()
 
-
     def reset_session_state():
         """
         Reset session state to start a new chat.
@@ -121,7 +122,6 @@ if st.user.is_logged_in:
         st.session_state.conversation_id = None
         st.session_state.messages = []
         st.session_state.is_new_chat = True
-
 
     def render_conversation_history():
         """
@@ -158,7 +158,6 @@ if st.user.is_logged_in:
         finally:
             db.close()
 
-
     def load_conversation(conv, db):
         """
         Load a selected conversation into the current session.
@@ -172,7 +171,8 @@ if st.user.is_logged_in:
             st.session_state.is_new_chat = False
 
             # Load all messages from the conversation
-            messages = db.query(Message).filter_by(conversation_id=conv.id).all()
+            messages = db.query(Message).filter_by(
+                conversation_id=conv.id).all()
             st.session_state.messages = [
                 {"role": msg.role, "content": msg.content} for msg in messages
             ]
@@ -180,9 +180,7 @@ if st.user.is_logged_in:
         else:
             st.warning("You do not have access to this conversation.")
 
-
     render_sidebar()
-
 
     # ============================================================================
     # MAIN CHAT INTERFACE
@@ -195,7 +193,7 @@ if st.user.is_logged_in:
         if len(st.session_state.messages) == 0:
             st.subheader(f"Welcome {st.user.name}!")
             st.markdown(
-                """I'm your **Personal Finance Advisor**, here to help you make informed financial decisions.
+                """I'm your *Personal Finance Advisor*, here to help you make informed financial decisions.
                 """)
             with st.expander("Common Prompts"):
                 st.markdown("""
@@ -225,7 +223,7 @@ if st.user.is_logged_in:
                 Track my Transport budget
                 ~~~
                 ~~~
-                Set Rs. 5000 for my vacation with a deadline of 2025-11-12
+                Set Rs. 5000 for my vacation goal with a deadline of 2025-11-12
                 ~~~
                 ~~~
                 Show me all my goals
@@ -240,7 +238,6 @@ if st.user.is_logged_in:
 
             st.divider()
 
-
     def render_chat_history():
         """
         Display all messages in the current conversation.
@@ -248,7 +245,6 @@ if st.user.is_logged_in:
         for message in st.session_state.messages:
             with st.chat_message(message["role"]):
                 st.markdown(message["content"])
-
 
     def create_new_conversation(prompt, db):
         """
@@ -272,7 +268,6 @@ if st.user.is_logged_in:
         st.session_state.is_new_chat = False
 
         return new_conv.id
-
 
     def save_message(role, content, conversation_id, db):
         """
@@ -316,8 +311,6 @@ if st.user.is_logged_in:
     #     )
     #     return st.write_stream(stream)
 
-
-
     def handle_user_input(prompt):
         """
         Process user input, generate AI response, and save to database.
@@ -336,46 +329,47 @@ if st.user.is_logged_in:
             save_message("user", prompt, st.session_state.conversation_id, db)
 
             # Add to session state
-            st.session_state.messages.append({"role": "user", "content": prompt})
+            st.session_state.messages.append(
+                {"role": "user", "content": prompt})
 
             # Display user message
             with st.chat_message("user"):
                 st.markdown(prompt)
-
 
             # Generate and display AI response
             with st.chat_message("assistant"):
                 with st.status("Generating response...", expanded=True) as status:
                     message_placeholder = st.empty()
                     messages = [
-                                "Analyzing request...",
-                                "Selecting tool...",
-                                "Generating response...",
-                                "Please wait a moment...",
-                            ]
+                        "Analyzing request...",
+                        "Selecting tool...",
+                        "Generating response...",
+                        "Please wait a moment...",
+                    ]
                     for message in messages:
                         message_placeholder.write(message)
                         time.sleep(3)
                     message_placeholder.empty()
                     # response = agent_responce(prompt)
-                    
+
                     with st.spinner("Almost there..."):
                         raw_response = agent_responce(prompt)
-                    
+
                     # Check if the response is a dictionary and convert it
                     if isinstance(raw_response, dict):
-                        response = raw_response.get('message', 'An error occurred.')
+                        response = raw_response.get(
+                            'message', 'An error occurred.')
                     else:
                         response = raw_response
-                st.markdown(response)   
-                    
-                    # response = get_ai_response(prompt)
-                status.update(label="Response generated!", state="complete", expanded=False)
+                st.markdown(response)
 
+                # response = get_ai_response(prompt)
+                status.update(label="Response generated!",
+                              state="complete", expanded=False)
 
             # Save assistant message
             save_message("assistant", response,
-                        st.session_state.conversation_id, db)
+                         st.session_state.conversation_id, db)
             st.session_state.messages.append(
                 {"role": "assistant", "content": response})
 
@@ -384,7 +378,6 @@ if st.user.is_logged_in:
 
         # Refresh UI to update sidebar
         st.rerun()
-
 
     # ============================================================================
     # RENDER MAIN INTERFACE
@@ -407,6 +400,4 @@ else:
     token = generate_email_jwt(email)
     st.session_state["id_token"] = token
     st.switch_page("app.py")
-    st.rerun()
-
-
+st.rerun()
