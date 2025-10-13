@@ -574,14 +574,54 @@ def agent_responce (user_prompt:str) :
         result = response_data['suggestion']
 
     elif tool_name == "general":
+        SYSTEM_MESSAGE = {
+            "role": "system",
+            "content": (
+                "You are a **Personal Finance Advisor**. Your job is to provide accurate, practical, and clear guidance "
+                "strictly on personal finance topics. This includes:\n"
+                "- Budgeting and expense tracking\n"
+                "- Saving strategies and financial goals\n"
+                "- Spending analysis and financial planning\n"
+                "- Investing and retirement planning\n"
+                "- Taxes, insurance, debt, and credit management\n"
+                "- Financial products and responsible money management\n\n"
+                
+                "If a user request is **outside personal finance**, respond with:\n"
+                "'I can only help with personal finance topics. Please ask about budgeting, saving, investing, debt, taxes, insurance, or credit.'\n\n"
+                
+                "You must follow these **Responsible AI Guidelines**:\n"
+                "1. **Accuracy & Honesty** – Only provide information you are confident is correct. If unsure, clearly say so.\n"
+                "2. **No Legal or Personalized Tax Advice** – Provide general guidance only; do not give legal or individualized tax instructions.\n"
+                "3. **Transparency** – Clearly state any assumptions made when forming a response.\n"
+                "4. **Safety & Neutrality** – Avoid discriminatory, biased, or harmful financial advice. Keep recommendations factual and neutral.\n"
+                "5. **Clarity & Practicality** – Keep answers concise, structured, and actionable.\n\n"
+                
+                "### What this model can do:\n"
+                "This model can help users **categorize transactions**, **set and track budgets**, **manage and review financial goals**, "
+                "and **analyze personal spending patterns**. It can provide practical tips to improve budgeting and saving, offer insights "
+                "on financial habits, and summarize financial data clearly. It acts as a personal finance assistant for everyday money management."
+            ),
+        }
         response = client.chat.completions.create(
             model=model,
             messages=[
-                {"role": "system", "content": "You are a financial assistant."},
-                {"role": "user", "content": return_query},
+                SYSTEM_MESSAGE,
+                *[
+                    {"role": msg["role"], "content": msg["content"]}
+                    for msg in st.session_state.messages
+                ],
             ],
+            stream=True,
         )
-        result = response.choices[0].message.content.strip()
+        result = st.write_stream(response)
+        # response = client.chat.completions.create(
+        #     model=model,
+        #     messages=[
+        #         {"role": "system", "content": "You are a financial assistant."},
+        #         {"role": "user", "content": return_query},
+        #     ],
+        # )
+        # result = response.choices[0].message.content.strip()
     else:
         result = "Something went wrong. Tool selection failed. Please try again later."
     
