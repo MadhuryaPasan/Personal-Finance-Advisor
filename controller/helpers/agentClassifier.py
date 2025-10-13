@@ -5,7 +5,7 @@ import requests
 
 
 id_token = st.session_state["id_token"]
-user_id=st.user.sub
+user_id = st.user.sub
 headers = {"Authorization": f"Bearer {id_token}"}
 
 
@@ -202,6 +202,30 @@ def classify_agent(user_message: str) -> str:
             "return_query": "save 5000 for vacation"
         }}
     }}
+    User: Set Rs. 5000 for my vacation goal with a deadline of 2025-11-12
+    Response:
+    {{
+        "tool_name": "add_new_goal",
+        "args": {{
+            "return_query": "save 5000 for vacation"
+        }}
+    }}
+    User: Set Rs. 5000 for my vacation goal with a deadline of 2025-11-12
+    Response:
+    {{
+        "tool_name": "add_new_goal",
+        "args": {{
+            "return_query": "save 5000 for vacation"
+        }}
+    }}
+    User: Set goal to save Rs 150,000 for car service bt 2022-12-15
+    Response:
+    {{
+        "tool_name": "add_new_goal",
+        "args": {{
+            "return_query": "save 5000 for vacation"
+        }}
+    }}
 
     User: Add a new goal: Emergency fund Rs 10000
     Response:
@@ -276,8 +300,6 @@ def classify_agent(user_message: str) -> str:
     }}
     """
 
-
-
     response = client.chat.completions.create(
         model=model,
         messages=[
@@ -291,13 +313,13 @@ def classify_agent(user_message: str) -> str:
     raw_content = response.choices[0].message.content.strip()
 
     # 1. Remove the opening markdown block marker
-    if raw_content.startswith("```json"):
+    if raw_content.startswith("json"):
         content = raw_content.lstrip("`\n").lstrip("json\n")
     else:
         content = raw_content
 
     # 2. Remove the closing markdown block marker
-    if content.endswith("```"):
+    if content.endswith(""):
         final_json_string = content.rstrip("`")
     else:
         final_json_string = content
@@ -349,23 +371,20 @@ def classify_agent(user_message: str) -> str:
     return tool_name, return_query
 
 
-
 def agent_result_formatter(agent_result):
     system_prompt = f"""
     You are a professional and highly knowledgeable Personal Finance Advisor. 
     Your primary role is to process and present structured financial data to users.
 
     Follow these instructions precisely:
-    1. Always present the provided data in a clear, well-formatted **table** with descriptive headers.
-    2. After the table, provide a **concise summary** of the data.
-    3. Maintain a **professional and informative tone** at all times.
-    4. Do **not** include raw data, code, or JSON in your response. All information must be presented as formatted text.
-    5. Ensure that **all details** from the provided data are included in the response.
-    6. If you receive an error message, **return it exactly as it is** (e.g., “No items found for this user.”).
-    7. If no data is provided, **do not generate or assume any fake data**. Simply state that no data was provided.
+    1. Always present the provided data in a clear, well-formatted *table* with descriptive headers.
+    2. After the table, provide a *concise summary* of the data.
+    3. Maintain a *professional and informative tone* at all times.
+    4. Do *not* include raw data, code, or JSON in your response. All information must be presented as formatted text.
+    5. Ensure that *all details* from the provided data are included in the response.
+    6. If you receive an error message, *return it exactly as it is* (e.g., “No items found for this user.”).
+    7. If no data is provided, *do not generate or assume any fake data*. Simply state that no data was provided.
     """
-
-
 
     result_json_string = json.dumps(agent_result, indent=4)
     response = client.chat.completions.create(
@@ -380,40 +399,38 @@ def agent_result_formatter(agent_result):
     return response.choices[0].message.content.strip()
 
 
-
-
-def agent_responce (user_prompt:str) :
+def agent_responce(user_prompt: str):
     tool_name, return_query = classify_agent(user_prompt)
     print(tool_name)
     result = ""
     tool_name = tool_name.lower()
     if tool_name == "expense_categorizer":
         payload = {"transaction": return_query}
-        response = requests.post(predict_api_url, json=payload, headers=headers)
+        response = requests.post(
+            predict_api_url, json=payload, headers=headers)
         result = agent_result_formatter(response.json())
-        
-        
-        
+
     elif tool_name == "all_budget_details":
         category = ""
         if return_query == "None" or return_query == "none":
             category = ""
         else:
             payload = {"transaction": return_query}
-            response = requests.post(predict_api_url, json=payload, headers=headers)
+            response = requests.post(
+                predict_api_url, json=payload, headers=headers)
             classify_agent_result = response.json()
             category = classify_agent_result["category"]
         payload = {"user_id": user_id, "category": category}
-        budget_response = requests.get(get_budget_api, json=payload, headers=headers)
-        
+        budget_response = requests.get(
+            get_budget_api, json=payload, headers=headers)
+
         response_data = budget_response.json()
         for result in response_data:
             if 'user_id' in result:
                 del result['user_id']
-        result = agent_result_formatter(f"This is the list of budgets previously entered by the user.  : {response_data}")
+        result = agent_result_formatter(
+            f"This is the list of budgets previously entered by the user.  : {response_data}")
         # result = response.json()
-
-
 
     elif tool_name == "get_all_transactions":
         category = ""
@@ -423,7 +440,8 @@ def agent_responce (user_prompt:str) :
             type = ""
         else:
             payload = {"transaction": return_query}
-            response = requests.post(predict_api_url, json=payload, headers=headers)
+            response = requests.post(
+                predict_api_url, json=payload, headers=headers)
             classify_agent_result = response.json()
             category = classify_agent_result["category"]
             type = classify_agent_result["type"]
@@ -431,18 +449,14 @@ def agent_responce (user_prompt:str) :
         get_transaction_response = requests.get(
             get_transaction_api, json=payload, headers=headers
         )
-        
-        
+
         response_data = get_transaction_response.json()
         for result in response_data:
             if 'user_id' in result:
                 del result['user_id']
-        result = agent_result_formatter(f"This is the list of transactions previously entered by the user.  : {response_data}")
-        
-        
-        
-        
-        
+        result = agent_result_formatter(
+            f"This is the list of transactions previously entered by the user.  : {response_data}")
+
     elif tool_name == "add_new_transaction":
         payload = {
             "user_id": user_id,
@@ -451,15 +465,13 @@ def agent_responce (user_prompt:str) :
         add_new_transaction_response = requests.post(
             create_transaction_api, json=payload, headers=headers
         )
-        
+
         response_data = add_new_transaction_response.json()
         if 'user_id' in response_data:
             del response_data['user_id']
-        result = agent_result_formatter(f"this is the details of new transaction and this data is succesfully saved : {response_data}")
-        
-        
-        
-        
+        result = agent_result_formatter(
+            f"this is the details of new transaction and this data is succesfully saved : {response_data}")
+
     elif tool_name == "add_new_budget":
         payload = {
             "user_id": user_id,
@@ -471,12 +483,13 @@ def agent_responce (user_prompt:str) :
         response_data = new_budget_response.json()
         if 'user_id' in response_data:
             del response_data['user_id']
-        result = agent_result_formatter(f"this is the details of setting up new budget plan and this data is succesfully saved  : {response_data}")
-        
-    elif tool_name == "add_new_goals":
+        result = agent_result_formatter(
+            f"this is the details of setting up new budget plan and this data is succesfully saved  : {response_data}")
+
+    elif tool_name == "add_new_goal":
         payload = {
-        "user_id": user_id,
-        "user_request": return_query
+            "user_id": user_id,
+            "user_request": return_query
         }
         new_goal_response = requests.post(
             create_goal_api, json=payload, headers=headers
@@ -484,12 +497,13 @@ def agent_responce (user_prompt:str) :
         response_data = new_goal_response.json()
         if 'user_id' in response_data:
             del response_data['user_id']
-        result = agent_result_formatter(f"this is the details of setting up new Goal and this data is succesfully saved  : {response_data}")
-        
+        result = agent_result_formatter(
+            f"this is the details of setting up new Goal and this data is succesfully saved  : {response_data}")
+
     elif tool_name == "get_all_goals":
         payload = {
-                    "user_id":user_id
-                }
+            "user_id": user_id
+        }
         get_get_response = requests.get(
             get_goal_api, json=payload, headers=headers
         )
@@ -497,18 +511,19 @@ def agent_responce (user_prompt:str) :
         for result in response_data:
             if 'user_id' in result:
                 del result['user_id']
-        result = agent_result_formatter(f"This is the list of goals previously entered by the user.  : {response_data}")
+        result = agent_result_formatter(
+            f"This is the list of goals previously entered by the user.  : {response_data}")
         print(result)
         print(response_data)
 
-    
-
     elif tool_name == "track_budget":
         payload = {"transaction": return_query}
-        response = requests.post(predict_api_url, json=payload, headers=headers)
+        response = requests.post(
+            predict_api_url, json=payload, headers=headers)
         classify_agent_result = response.json()
         classify_agent_result_category = classify_agent_result["category"]
-        payload = {"user_id": user_id, "type": "", "category": classify_agent_result_category}
+        payload = {"user_id": user_id, "type": "",
+                   "category": classify_agent_result_category}
         get_transaction_response = requests.get(
             get_transaction_api, json=payload, headers=headers
         )
@@ -530,8 +545,8 @@ def agent_responce (user_prompt:str) :
         )
         response_data = track_budget_response.json()
         result = response_data['suggestion']
-        
-    elif tool_name == "track_goal": 
+
+    elif tool_name == "track_goal":
         payload = {"user_id": user_id, "type": "", "category": ""}
         get_transaction_response = requests.get(
             get_transaction_api, json=payload, headers=headers
@@ -539,10 +554,10 @@ def agent_responce (user_prompt:str) :
         get_transaction_result = get_transaction_response.json()
 
         payload = {
-                "user_id" : "104283579482555329026",
-                "user_request" : return_query,
-                "recent_transactions":get_transaction_result
-            }
+            "user_id": "104283579482555329026",
+            "user_request": return_query,
+            "recent_transactions": get_transaction_result
+        }
         track_goal_response = requests.post(
             track_goal_api, json=payload, headers=headers
         )
@@ -560,10 +575,4 @@ def agent_responce (user_prompt:str) :
         result = response.choices[0].message.content.strip()
     else:
         result = "Something went wrong. Tool selection failed. Please try again later."
-    
     return result
-    
-    
-    
-    
-    
