@@ -111,24 +111,27 @@ class ExpenseCategorizerAgent:
         Use LLM to verify spaCy's prediction.
         Returns corrected categorization if needed.
         """
-        system_prompt = f"""You are a financial transaction categorizer.
-Your task is to verify and, if necessary, correct the categorization provided.
+        system_prompt = f"""
+        You are a Financial Transaction Categorizer.
+        Your task is to validate and, if needed, correct the provided transaction categorization.
 
-ALLOWED VALUES:
-- Type: {type_labels}
-- Categories: {all_categories}
+        ALLOWED VALUES:
+        - Type: {type_labels}
+        - Category: {all_categories}
 
-You MUST respond with valid JSON containing:
-- "is_correct": boolean indicating if the provided prediction is correct
-- "corrected_type": The correct Type (must be from {type_labels})
-- "corrected_category": The correct Category (must be from {all_categories})
-- "corrected_amount": The amount as a clean number (e.g., "1000")
-- "reason": Brief explanation of any correction
+        You MUST respond with a valid JSON object containing the following fields:
+        - "is_correct": A boolean indicating whether the provided prediction is correct.
+        - "corrected_type": The correct Type (must be one of {type_labels}).
+        - "corrected_category": The correct Category (must be one of {all_categories}).
+        - "corrected_amount": The transaction amount as a clean number (e.g., "1000"). 
+        The user may provide the amount with or without currency symbols. 
+        You must extract and return only the numeric value.
+        - "reason": A brief explanation of any corrections made.
 
-If the prediction is correct, set is_correct to true and corrected_* fields to match the input prediction.
+        If the prediction is correct, set "is_correct" to true and return the same values for the corrected_* fields as the original prediction.
 
-Transaction Text: "{text}"
-Current Prediction: {json.dumps(spacy_prediction)}"""
+        Transaction Text: "{text}"
+        Current Prediction: {json.dumps(spacy_prediction)}"""
 
         try:
             response = self.client.chat.completions.create(
