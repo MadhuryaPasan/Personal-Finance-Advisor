@@ -1,7 +1,3 @@
-"""
-Personal Finance Advisor - Streamlit Chat Application
-A conversational AI application for personal finance guidance with conversation history.
-"""
 
 import streamlit as st
 from openai import OpenAI
@@ -10,14 +6,8 @@ from controller.helpers.agentClassifier import agent_responce
 import time
 from controller.helpers.auth import *
 
-# ============================================================================
-# AI CLIENT CONFIGURATION
-# ============================================================================
 
 def get_ai_client():
-    """
-    Initialize and return OpenAI-compatible client for Ollama server.
-    """
     return OpenAI(
         base_url="http://localhost:11434/v1",
         api_key="dummy_key"  # Ollama doesn't require real API key
@@ -26,11 +16,6 @@ def get_ai_client():
 
 client = get_ai_client()
 
-# st.balloons()
-
-# ============================================================================
-# SESSION STATE INITIALIZATION
-# ============================================================================
 
 def initialize_session_state():
     """
@@ -50,26 +35,6 @@ def initialize_session_state():
 
 initialize_session_state()
 
-
-# ============================================================================
-# SYSTEM PROMPT
-# ============================================================================
-
-SYSTEM_MESSAGE = {
-    "role": "system",
-    "content": (
-        "You are Personal Finance Advisor. Only answer questions about personal finance "
-        "(budgeting, saving, spending, investing, retirement, taxes, insurance, debt, credit, "
-        "financial products, and financial planning). If a request is outside of personal finance, "
-        "respond: 'I can only help with personal finance topics. Please ask about budgeting, saving, "
-        "investing, debt, taxes, insurance, or credit.' Keep answers concise and practical."
-    ),
-}
-
-
-# ============================================================================
-# PAGE CONFIGURATION
-# ============================================================================
 
 st.set_page_config(
     page_title="Personal Finance Advisor",
@@ -107,8 +72,6 @@ if st.user.is_logged_in:
                 use_container_width=True
             ):
                 reset_session_state()
-                # Debug info - remove in production
-                # st.markdown(f"for testing (new chat): {st.session_state.conversation_id}")
 
             # Load and display conversation history
             render_conversation_history()
@@ -137,8 +100,6 @@ if st.user.is_logged_in:
                 .all()
             )
 
-            # Debug info - remove in production
-            # st.markdown(f"for testing (current chat): {st.session_state.conversation_id}")
 
             # Display header
             if conversations:
@@ -160,13 +121,6 @@ if st.user.is_logged_in:
 
 
     def load_conversation(conv, db):
-        """
-        Load a selected conversation into the current session.
-
-        Args:
-            conv: Conversation object to load
-            db: Database session
-        """
         if conv.user_id == st.user.sub:
             st.session_state.conversation_id = conv.id
             st.session_state.is_new_chat = False
@@ -251,16 +205,6 @@ if st.user.is_logged_in:
 
 
     def create_new_conversation(prompt, db):
-        """
-        Create a new conversation in the database.
-
-        Args:
-            prompt: First user message (used to generate title)
-            db: Database session
-
-        Returns:
-            ID of the newly created conversation
-        """
         new_conv = Conversation(
             title=prompt[:50] + "...",  # Use first 50 chars as title
             user_id=st.user.sub
@@ -275,15 +219,6 @@ if st.user.is_logged_in:
 
 
     def save_message(role, content, conversation_id, db):
-        """
-        Save a message to the database.
-
-        Args:
-            role: 'user' or 'assistant'
-            content: Message text
-            conversation_id: ID of the conversation
-            db: Database session
-        """
         message = Message(
             role=role,
             content=content,
@@ -319,12 +254,6 @@ if st.user.is_logged_in:
 
 
     def handle_user_input(prompt):
-        """
-        Process user input, generate AI response, and save to database.
-
-        Args:
-            prompt: User's input message
-        """
         db = SessionLocal()
 
         try:
