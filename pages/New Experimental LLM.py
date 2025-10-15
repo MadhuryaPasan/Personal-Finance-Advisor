@@ -11,7 +11,7 @@ client = OpenAI(
 )
 
 if "experimental_finance_model" not in st.session_state:
-    st.session_state["experimental_finance_model"] = "FinanceModelV0"
+    st.session_state["experimental_finance_model"] = "FinanceModelV1.6"
 
 if "experimental_messages" not in st.session_state:
     st.session_state["experimental_messages"] = []
