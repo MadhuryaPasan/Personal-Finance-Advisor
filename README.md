@@ -1,10 +1,10 @@
 <div align="center">
 
-# 💰 **Personal Finance Advisor**  
+#  *Personal Finance Advisor*  
 
 
-### 🧠 AI-Powered Personal Finance Management System  
-Seamlessly manage your **expenses**, **budgets**, and **savings goals** — powered by **Streamlit**, **FastAPI**, and **Machine Learning**.
+###  AI-Powered Personal Finance Management System  
+Seamlessly manage your *expenses, **budgets, and **savings goals* — powered by *Streamlit, **FastAPI,LLM, and **Machine Learning*.
 
 ---
 
@@ -12,77 +12,75 @@ Seamlessly manage your **expenses**, **budgets**, and **savings goals** — powe
 [![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
 [![Python](https://img.shields.io/badge/Language-Python-3670A0?logo=python)](https://www.python.org/)
 [![SQLite](https://img.shields.io/badge/Database-SQLite-003B57?logo=sqlite)](https://www.sqlite.org/)
+[![Ollama](https://img.shields.io/badge/LLM-Ollama-000000?logo=ollama)](https://ollama.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 </div>
 
 ---
 
-## ⚙️ **Overview**
+## *Overview*
 
-**Personal Finance Advisor** is an intelligent system that simplifies financial management with AI.  
+*Personal Finance Advisor* is an intelligent system that simplifies financial management with AI.  
 It helps users:
-- 🧾 Automatically **categorize expenses**
-- 🎯 **Plan and track savings goals**
-- 💰 **Create and monitor budgets**
+-  Automatically *categorize expenses*
+-  *Plan and track savings goals*
+-  *Create and monitor budgets*
 
-All accessible through a beautiful **Streamlit dashboard** and a robust **FastAPI backend**.
-
----
-
-## 🧠 **Core AI Agents**
-
-| Agent | Description | Icon |
-|:------|:-------------|:----:|
-| **💳 Expense Categorizer Agent** | Uses AI/ML to analyze transaction text and automatically classify it into categories | 🤖 |
-| **📊 Budget Tracker Agent** | Monitors monthly spending against limits and alerts when overspending | 📈 |
-| **🎯 Saving Goal Planner Agent** | Helps users plan savings goals and calculate required contributions | 💰 |
+All accessible through a beautiful *Streamlit dashboard* and a robust *FastAPI backend*.
 
 ---
 
-## 🚀 **Key Features**
+##  *Core AI Agents*
 
-- 🤖 AI-driven **Expense Categorization**  
-- 🎯 Smart **Goal Tracking** with real-time feedback  
-- 💸 Customizable **Budget Management**  
-- 🔐 Secure **Google OAuth Login**  
-- ⚙️ Comprehensive **RESTful API**  
-- 📊 Interactive **Streamlit Dashboard**
+| Agent | Description | 
+|:------|:-------------|
+| ** Expense Categorizer Agent** | Uses AI/ML to analyze transaction text and automatically classify it into categories | 
+| ** Budget Tracker Agent** | Monitors monthly spending against limits and alerts when overspending | 
+| ** Saving Goal Planner Agent** | Helps users plan savings goals and calculate required contributions | 
+| ** Transaction Agent ** | Handle all Income and Expence transactions | 
 
 ---
 
-## 🏗️ **Architecture**
+##  *Key Features*
+
+-  AI-driven *Expense Categorization*  
+-  Smart *Goal Tracking* with real-time feedback  
+-  Customizable *Budget Management*  
+-  Secure *Google OAuth Login*  
+-  Comprehensive *RESTful API*  
+-  Interactive *Streamlit Dashboard*
+-  Local *Use local ollama model (Gemma3:1b / Gemma3:270m)*
+
+---
+
+##  *Architecture*
 
 | Component | Technology |
 |------------|-------------|
-| **Frontend** | Streamlit |
-| **Backend** | FastAPI |
-| **Authentication** | Google OAuth + JWT |
-| **AI/ML** | Expense Categorization Model |
+| *Frontend* | Streamlit |
+| *Backend* | FastAPI |
+| *Authentication* | Google OAuth + JWT |
+| *AI/ML* | Expense Categorization Model |
 
 ---
 
-## 📋 **Prerequisites**
+## *Prerequisites*
 
-- Python **3.12+**
-- `pip` package manager  
+- Python *3.12*
 - Google OAuth credentials  
 
 ---
 
-## ⚙️ **Installation & Setup**
+## *Installation & Setup*
 
-### 1️⃣ Clone the Repository
-```bash
-git clone https://github.com/yourusername/Personal-Finance-Advisor.git
-cd Personal-Finance-Advisor
-````
+### 1. Clone the Repository
 
-### 2️⃣ Install Dependencies
+### 2. Install Dependencies
 
-#### 🌟 **Recommended: Create a Virtual Environment**
+####  *Recommended: Create a Virtual Environment*
 
-```bash
+bash
 # Create a new virtual environment
 python -m venv finance-advisor-env
 
@@ -92,62 +90,86 @@ finance-advisor-env\Scripts\activate
 
 # On macOS/Linux:
 source finance-advisor-env/bin/activate
-```
 
-#### 📦 **Install Required Packages**
 
-```bash
+####  *Install Required Packages*
+
+bash
 pip install -r requirements.txt
-```
 
-> 💡 **Tip**: Using a virtual environment isolates your project dependencies and prevents conflicts with other Python projects.
 
-#### ✅ **Verify Installation**
+>  *Tip*: Using a virtual environment isolates your project dependencies and prevents conflicts with other Python projects.
 
-```bash
+#### *Verify Installation*
+
+bash
 # Check if all packages are installed correctly
 pip list
-```
 
-### 3️⃣ Configure Google OAuth
+
+### 3. Configure Google OAuth
 
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a project → Enable **Google+ API**
-3. Generate **OAuth 2.0 credentials**
-4. Download `credentials.json` → place it in your project root
+2. Create a project → Enable *Google+ API*
+3. Generate *OAuth 2.0 credentials*
+4. Download credentials.json and open the file.
+5. Now create secrets.toml in .streamlit folder and add this code by filling out the correct information acording to your credentials.
+~~~
+[auth]
+redirect_uri = "http://localhost:8501/oauth2callback"
+client_id = "<file this with your client_id>"
+client_secret = "file this with your client_secret>"
+server_metadata_url = "https://accounts.google.com/.well-known/openid-configuration" 
+~~~
 
----
+### 4. Ollama Installations
+1. [Download](https://ollama.com/download) and inatall Ollama
+2. Then run this commands on CLI
+   
+Install Gemma3:270m model
+~~~
+ollama run gemma3:270m
+~~~
+Install Gemma3:1b model
+~~~
+ollama run gemma3:1b
+~~~
+> Note: These model can run on almost any device.
 
-## 🧩 **Running the Application**
+3. *Install Experimantal Finance Model*
 
-### ▶️ Start Streamlit Frontend
+[Download](https://drive.google.com/file/d/1dP9YmgGIBrsykEITlajESoGLDREJ_0l6/view?usp=sharing) .gguf file.
+Then coppy this file to CustomeLLM/v1.6 folder.(keep the other file as it is and don't change the .gguf file name)
+Then open this folder and run these codes.
+~~~
+ollama create FinanceModelV1.6 -f Modelfile
+~~~
+~~~
+ollama run FinanceModelV1.6
+~~~
+> Note: This model is finetuned using gemma3. This one can also run on almost any device.
 
-```bash
+
+## *Running the Application*
+
+### Start Streamlit Frontend
+
+bash
 streamlit run app.py
-```
 
-### ▶️ Start FastAPI Backend
 
-```bash
+### Start FastAPI Backend
+
+bash
 uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
-```
+
 
 ---
 
-## 🔑 **JWT Authentication Setup**
 
-1. Run the Streamlit app
-2. Login with your **Google account**
-3. Go to the **ExpenseCat** page
-4. Copy your **JWT Token** for Postman or API testing
+## *Project Structure*
 
-> 💡 *JWT token regenerates every time Streamlit restarts. Always use a new one.*
 
----
-
-## 📁 **Project Structure**
-
-```
 Personal-Finance-Advisor/
 ├── 📁 .streamlit/                   # Streamlit configuration
 │   ├── client_secret.json           # Google OAuth credentials
@@ -160,6 +182,12 @@ Personal-Finance-Advisor/
 │   └── transactionsAgent.py        # Transaction processing agent
 ├── 📁 api/                          # FastAPI backend
 │   └── main.py                      # FastAPI main application
+├── 📁 CustomeLLM/                   # Custom ollama model
+│   ├── 📁 v1.6/                 
+│   │   ├── gemma-3-1b-it.Q8_0.gguf  # Model gguf (You need to dwonload this from the given link)
+│   │   ├── info.ipynb                # For testing (get the details form gguf)
+│   │   ├── Modelfile                # Ollama Model file
+│   │   ├── Note.md                  # Instructions
 ├── 📁 controller/                   # Controllers
 │   ├── 📁 database/                 # Database controllers
 │   │   ├── __init__.py
@@ -203,54 +231,41 @@ Personal-Finance-Advisor/
 ├── LICENSE                         # MIT License
 ├── README.md                       # Project documentation
 └── requirements.txt                # Python dependencies
-```
 
-## 🔧 **Configuration**
 
-Create a `.env` file:
-
-```env
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-JWT_SECRET_KEY=your_jwt_secret_key
-```
-
----
-
-## 👥 **Contributors**
+## *Contributors*
 
 | Student ID | Name | Email |
 |------------|------|-------|
+| IT23429628 | ERANDUNU P.H.L | it23191488@my.sliit.lk |
 | IT23191488 | Perera P.K.M.P | it23191488@my.sliit.lk |
-| IT23 |  | it23@my.sliit.lk |
-| IT23 |  | it23@my.sliit.lk |
+| IT23334038 | WIJEWARDENA P.K.L | it23191488@my.sliit.lk |
 | IT23343320 | Senadeera D.M.K.K | it23343320@my.sliit.lk |
 ---
 
 
-## 📝 **License**
+## *License*
 
-This project is licensed under the **MIT License**.
+This project is licensed under the *MIT License*.
 See the [LICENSE](LICENSE) file for more details.
 
 ---
 
-## 📞 **Support**
+## *Support*
 
 💬 Need help? Have questions or found a bug?
 
-Please create an **Issue** on our [GitHub Issues](https://github.com/MadhuryaPasan/Personal-Finance-Advisor/issues) page.
+Please create an *Issue* on our [GitHub Issues](https://github.com/MadhuryaPasan/Personal-Finance-Advisor/issues) page.
 
-We'll get back to you as soon as possible! 🚀
+We'll get back to you as soon as possible! 
 
 ---
 
 <div align="center">
 
-✨ *Built with ❤️ using Streamlit + FastAPI + AI* <br> <img src="https://img.shields.io/badge/Streamlit-FastAPI-Python?style=for-the-badge&logo=python&color=blue"/>
+SLIIT 3rd Year 1st Semmester Project
 
 </div>
 ```
 
 ---
-
