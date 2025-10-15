@@ -237,9 +237,9 @@ Personal-Finance-Advisor/
 
 | Student ID | Name | Email |
 |------------|------|-------|
-| IT23429628 | ERANDUNU P.H.L | it23191488@my.sliit.lk |
+| IT23429628 | ERANDUNU P.H.L | it23429628@my.sliit.lk |
 | IT23191488 | Perera P.K.M.P | it23191488@my.sliit.lk |
-| IT23334038 | WIJEWARDENA P.K.L | it23191488@my.sliit.lk |
+| IT23334038 | WIJEWARDENA P.K.L | it23334038@my.sliit.lk |
 | IT23343320 | Senadeera D.M.K.K | it23343320@my.sliit.lk |
 ---
 
