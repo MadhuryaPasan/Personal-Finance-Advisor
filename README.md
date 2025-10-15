@@ -2,7 +2,6 @@
 
 # 💰 **Personal Finance Advisor**  
 
-<img src="[https://github.com/user-attachments/assets/your-banner-image-id](https://github.com/MadhuryaPasan/Personal-Finance-Advisor.git)" alt="Personal Finance Advisor Banner" width="800"/>
 
 ### 🧠 AI-Powered Personal Finance Management System  
 Seamlessly manage your **expenses**, **budgets**, and **savings goals** — powered by **Streamlit**, **FastAPI**, and **Machine Learning**.
@@ -65,7 +64,7 @@ All accessible through a beautiful **Streamlit dashboard** and a robust **FastAP
 
 ## 📋 **Prerequisites**
 
-- Python **3.8+**
+- Python **3.12+**
 - `pip` package manager  
 - Google OAuth credentials  
 
@@ -81,9 +80,33 @@ cd Personal-Finance-Advisor
 
 ### 2️⃣ Install Dependencies
 
+#### 🌟 **Recommended: Create a Virtual Environment**
+
+```bash
+# Create a new virtual environment
+python -m venv finance-advisor-env
+
+# Activate the virtual environment
+# On Windows:
+finance-advisor-env\Scripts\activate
+
+# On macOS/Linux:
+source finance-advisor-env/bin/activate
+```
+
+#### 📦 **Install Required Packages**
+
 ```bash
 pip install -r requirements.txt
-pip install google-auth google-auth-oauthlib
+```
+
+> 💡 **Tip**: Using a virtual environment isolates your project dependencies and prevents conflicts with other Python projects.
+
+#### ✅ **Verify Installation**
+
+```bash
+# Check if all packages are installed correctly
+pip list
 ```
 
 ### 3️⃣ Configure Google OAuth
@@ -109,11 +132,6 @@ streamlit run app.py
 uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-### 🌐 Access
-
-* **Frontend:** [http://localhost:8501](http://localhost:8501)
-* **API Docs:** [http://localhost:8000/docs](http://localhost:8000/docs)
-
 ---
 
 ## 🔑 **JWT Authentication Setup**
@@ -127,157 +145,68 @@ uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
 
 ---
 
-## 🧪 **API Testing Guide (Postman)**
+## 📁 **Project Structure**
 
-### 📬 Headers
-
-| Key             | Value                     |
-| --------------- | ------------------------- |
-| `Content-Type`  | `application/json`        |
-| `Authorization` | `Bearer <your_jwt_token>` |
-
----
-
-### 🔍 Health Check
-
-```http
-GET http://localhost:8000/health
-```
-
----
-
-### 💳 Expense Categorizer Agent
-
-```http
-POST http://localhost:8000/predict
-```
-
-**Body:**
-
-```json
-{
-  "transaction": "car service rs 1000"
-}
-```
-
----
-
-### 🎯 Create Financial Goal
-
-```http
-POST http://localhost:8000/create_goal
-```
-
-**Body:**
-
-```json
-{
-  "goal_name": "Vacation",
-  "target_amount": 5000.0,
-  "deadline": "2026-01-01",
-  "current_savings": 1000.0
-}
-```
-
----
-
-### 📈 Track Goal Progress
-
-```http
-POST http://localhost:8000/track_goal
-```
-
-**Body:**
-
-```json
-{
-  "goal": {
-    "goal_name": "Vacation",
-    "target_amount": 5000.0,
-    "deadline": "2026-01-01",
-    "current_savings": 1000.0,
-    "remaining_amount": 4000.0,
-    "monthly_savings_needed": 333,
-    "weekly_savings_needed": 77
-  },
-  "recent_transactions": [
-    {
-      "type": "Expense",
-      "category": "Transport",
-      "amount": "rs 1000",
-      "user_request": "car service rs 1000"
-    }
-  ],
-  "additional_savings": 500.0
-}
-```
-
----
-
-### 💰 Set Budget
-
-```http
-POST http://localhost:8000/set_budget
-```
-
-**Body:**
-
-```json
-{
-  "category": "Transport",
-  "monthly_limit": 500.0,
-  "start_date": "2025-09-01"
-}
-```
-
----
-
-### 📊 Monitor Budget
-
-```http
-POST http://localhost:8000/monitor_budget
-```
-
-**Body:**
-
-```json
-{
-  "budget": {
-    "category": "Transport",
-    "monthly_limit": 500.0,
-    "start_date": "2025-09-01",
-    "current_spent": 0.0
-  },
-  "recent_transactions": [
-    {
-      "type": "Expense",
-      "category": "Transport",
-      "amount": "rs 600",
-      "user_request": "car service rs 600"
-    }
-  ],
-  "goal": {
-    "goal_name": "Vacation",
-    "target_amount": 5000.0
-  }
-}
-```
-
----
-
+// ...existing code...
 ## 📁 **Project Structure**
 
 ```
 Personal-Finance-Advisor/
-├── api/                    # FastAPI backend
-│   ├── main.py             # API main application
-│   └── ...                 # API modules
-├── app.py                  # Streamlit frontend
-├── requirements.txt        # Python dependencies
-└── README.md               # Project documentation
+├── 📁 .streamlit/                   # Streamlit configuration
+│   ├── client_secret.json           # Google OAuth credentials
+│   └── secrets.toml                 # Streamlit secrets
+├── 📁 agents/                       # AI Agents
+│   ├── __init__.py
+│   ├── BudgetTracker.py            # Budget tracking agent
+│   ├── ExpenseCategorizer.py       # Expense categorization agent
+│   ├── SavingGoalPlanner.py        # Savings goal planner agent
+│   └── transactionsAgent.py        # Transaction processing agent
+├── 📁 api/                          # FastAPI backend
+│   └── main.py                      # FastAPI main application
+├── 📁 controller/                   # Controllers
+│   ├── 📁 database/                 # Database controllers
+│   │   ├── __init__.py
+│   │   └── database.py              # Database operations
+│   └── 📁 helpers/                  # Helper functions
+│       ├── __init__.py
+│       ├── agentClassifier.py       # Agent classification helper
+│       ├── auth.py                  # Authentication helper
+│       ├── budgetTrackerSuggestion.py # Budget tracking suggestions
+│       └── savinggoalplannersummerization.py # Goal planning helper
+├── 📁 models/                       # Machine Learning models
+│   ├── 📁 expense_income_category/  # Expense categorization models
+│   │   ├── 📁 textcat/
+│   │   │   ├── config.cfg
+│   │   │   ├── meta.json
+│   │   │   └── tokenizer
+│   │   └── 📁 vocab/
+│   │       ├── config.cfg
+│   │       ├── meta.json
+│   │       └── tokenizer
+│   ├── 📁 expense_income_type/      # Income type classification models
+│   │   ├── 📁 textcat/
+│   │   │   ├── config.cfg
+│   │   │   ├── meta.json
+│   │   │   └── tokenizer
+│   │   └── 📁 vocab/
+│   │       ├── config.cfg
+│   │       ├── meta.json
+│   │       └── tokenizer
+│   └── 📁 train_Expense_Categorizer/ # Training data and scripts
+│       ├── expenses_income_dataset.csv # Training dataset
+│       └── train.ipynb              # Training notebook
+├── 📁 pages/                        # Streamlit pages
+│   ├── home.py                      # Home page
+│   ├── insights.py                  # Insights and analytics page
+│   └── New Experimental LLM.py     # Experimental LLM features
+├── app.py                          # Main Streamlit application
+├── chat_main_db_v1.db             # SQLite database
+├── expense_classifier.log          # Application logs
+├── .gitignore                      # Git ignore file
+├── LICENSE                         # MIT License
+├── README.md                       # Project documentation
+└── requirements.txt                # Python dependencies
 ```
-
----
 
 ## 🔧 **Configuration**
 
@@ -293,29 +222,14 @@ JWT_SECRET_KEY=your_jwt_secret_key
 
 ## 👥 **Contributors**
 
-| Name          | Role                     |
-| ------------- | ------------------------ |
-| **Your Name** | Developer & Project Lead |
-
+| Student ID | Name | Email |
+|------------|------|-------|
+| IT23191488 | Perera P.K.M.P | it23191488@my.sliit.lk |
+| IT23 |  | it23@my.sliit.lk |
+| IT23 |  | it23@my.sliit.lk |
+| IT23343320 | Senadeera D.M.K.K | it23343320@my.sliit.lk |
 ---
 
-## 🪲 **Known Issues**
-
-* 🔄 JWT token regenerates when Streamlit restarts
-* ⚙️ Backend and frontend must both be active for full functionality
-
----
-
-## 🔮 **Future Enhancements**
-
-* [ ] Persistent JWT token storage
-* [ ] Mobile app (React Native / Flutter)
-* [ ] Integration with live banking APIs
-* [ ] Advanced analytics dashboard
-* [ ] Multi-currency support
-* [ ] AI model optimization
-
----
 
 ## 📝 **License**
 
@@ -326,9 +240,11 @@ See the [LICENSE](LICENSE) file for more details.
 
 ## 📞 **Support**
 
-💬 Need help?
-Email: `your-email@example.com`
-or create an **Issue** on the repository.
+💬 Need help? Have questions or found a bug?
+
+Please create an **Issue** on our [GitHub Issues](https://github.com/MadhuryaPasan/Personal-Finance-Advisor/issues) page.
+
+We'll get back to you as soon as possible! 🚀
 
 ---
 
