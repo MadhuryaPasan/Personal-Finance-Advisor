@@ -1,10 +1,10 @@
 <div align="center">
 
-#  *Personal Finance Advisor*  
+#  **Personal Finance Advisor**  
 
 
 ###  AI-Powered Personal Finance Management System  
-Seamlessly manage your *expenses, **budgets, and **savings goals* — powered by *Streamlit, **FastAPI,LLM, and **Machine Learning*.
+Seamlessly manage your **expenses**, **budgets**, and **savings goals** — powered by **Streamlit**, **FastAPI**,**LLM**, and **Machine Learning**.
 
 ---
 
@@ -19,19 +19,19 @@ Seamlessly manage your *expenses, **budgets, and **savings goals* — powered by
 
 ---
 
-## *Overview*
+## **Overview**
 
-*Personal Finance Advisor* is an intelligent system that simplifies financial management with AI.  
+**Personal Finance Advisor** is an intelligent system that simplifies financial management with AI.  
 It helps users:
--  Automatically *categorize expenses*
--  *Plan and track savings goals*
--  *Create and monitor budgets*
+-  Automatically **categorize expenses**
+-  **Plan and track savings goals**
+-  **Create and monitor budgets**
 
-All accessible through a beautiful *Streamlit dashboard* and a robust *FastAPI backend*.
+All accessible through a beautiful **Streamlit dashboard** and a robust **FastAPI backend**.
 
 ---
 
-##  *Core AI Agents*
+##  **Core AI Agents**
 
 | Agent | Description | 
 |:------|:-------------|
@@ -42,45 +42,45 @@ All accessible through a beautiful *Streamlit dashboard* and a robust *FastAPI b
 
 ---
 
-##  *Key Features*
+##  **Key Features**
 
--  AI-driven *Expense Categorization*  
--  Smart *Goal Tracking* with real-time feedback  
--  Customizable *Budget Management*  
--  Secure *Google OAuth Login*  
--  Comprehensive *RESTful API*  
--  Interactive *Streamlit Dashboard*
--  Local *Use local ollama model (Gemma3:1b / Gemma3:270m)*
+-  AI-driven **Expense Categorization**  
+-  Smart **Goal Tracking** with real-time feedback  
+-  Customizable **Budget Management**  
+-  Secure **Google OAuth Login**  
+-  Comprehensive **RESTful API**  
+-  Interactive **Streamlit Dashboard**
+-  Local **Use local ollama model (Gemma3:1b / Gemma3:270m)**
 
 ---
 
-##  *Architecture*
+##  **Architecture**
 
 | Component | Technology |
 |------------|-------------|
-| *Frontend* | Streamlit |
-| *Backend* | FastAPI |
-| *Authentication* | Google OAuth + JWT |
-| *AI/ML* | Expense Categorization Model |
+| **Frontend** | Streamlit |
+| **Backend** | FastAPI |
+| **Authentication** | Google OAuth + JWT |
+| **AI/ML** | Expense Categorization Model |
 
 ---
 
-## *Prerequisites*
+## **Prerequisites**
 
-- Python *3.12*
+- Python **3.12**
 - Google OAuth credentials  
 
 ---
 
-## *Installation & Setup*
+## **Installation & Setup**
 
-### 1. Clone the Repository
+### 1️. Clone the Repository
 
-### 2. Install Dependencies
+### 2️. Install Dependencies
 
-####  *Recommended: Create a Virtual Environment*
+####  **Recommended: Create a Virtual Environment**
 
-bash
+```bash
 # Create a new virtual environment
 python -m venv finance-advisor-env
 
@@ -90,29 +90,29 @@ finance-advisor-env\Scripts\activate
 
 # On macOS/Linux:
 source finance-advisor-env/bin/activate
+```
 
+####  **Install Required Packages**
 
-####  *Install Required Packages*
-
-bash
+```bash
 pip install -r requirements.txt
+```
 
+>  **Tip**: Using a virtual environment isolates your project dependencies and prevents conflicts with other Python projects.
 
->  *Tip*: Using a virtual environment isolates your project dependencies and prevents conflicts with other Python projects.
+#### **Verify Installation**
 
-#### *Verify Installation*
-
-bash
+```bash
 # Check if all packages are installed correctly
 pip list
+```
 
-
-### 3. Configure Google OAuth
+### 3️. Configure Google OAuth
 
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a project → Enable *Google+ API*
-3. Generate *OAuth 2.0 credentials*
-4. Download credentials.json and open the file.
+2. Create a project → Enable **Google+ API**
+3. Generate **OAuth 2.0 credentials**
+4. Download `credentials.json` and open the file.
 5. Now create secrets.toml in .streamlit folder and add this code by filling out the correct information acording to your credentials.
 ~~~
 [auth]
@@ -136,9 +136,9 @@ ollama run gemma3:1b
 ~~~
 > Note: These model can run on almost any device.
 
-3. *Install Experimantal Finance Model*
+3. **Install Experimantal Finance Model**
 
-[Download](https://drive.google.com/file/d/1dP9YmgGIBrsykEITlajESoGLDREJ_0l6/view?usp=sharing) .gguf file.
+[Download](#) .gguf file.
 Then coppy this file to CustomeLLM/v1.6 folder.(keep the other file as it is and don't change the .gguf file name)
 Then open this folder and run these codes.
 ~~~
@@ -150,26 +150,26 @@ ollama run FinanceModelV1.6
 > Note: This model is finetuned using gemma3. This one can also run on almost any device.
 
 
-## *Running the Application*
+## **Running the Application**
 
 ### Start Streamlit Frontend
 
-bash
+```bash
 streamlit run app.py
-
+```
 
 ### Start FastAPI Backend
 
-bash
+```bash
 uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
-
+```
 
 ---
 
 
-## *Project Structure*
+## **Project Structure**
 
-
+```
 Personal-Finance-Advisor/
 ├── 📁 .streamlit/                   # Streamlit configuration
 │   ├── client_secret.json           # Google OAuth credentials
@@ -231,9 +231,9 @@ Personal-Finance-Advisor/
 ├── LICENSE                         # MIT License
 ├── README.md                       # Project documentation
 └── requirements.txt                # Python dependencies
+```
 
-
-## *Contributors*
+## **Contributors**
 
 | Student ID | Name | Email |
 |------------|------|-------|
@@ -244,18 +244,18 @@ Personal-Finance-Advisor/
 ---
 
 
-## *License*
+## **License**
 
-This project is licensed under the *MIT License*.
+This project is licensed under the **MIT License**.
 See the [LICENSE](LICENSE) file for more details.
 
 ---
 
-## *Support*
+## **Support**
 
 💬 Need help? Have questions or found a bug?
 
-Please create an *Issue* on our [GitHub Issues](https://github.com/MadhuryaPasan/Personal-Finance-Advisor/issues) page.
+Please create an **Issue** on our [GitHub Issues](https://github.com/MadhuryaPasan/Personal-Finance-Advisor/issues) page.
 
 We'll get back to you as soon as possible! 
 
@@ -269,3 +269,4 @@ SLIIT 3rd Year 1st Semmester Project
 ```
 
 ---
+
