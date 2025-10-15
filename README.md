@@ -138,7 +138,7 @@ ollama run gemma3:1b
 
 3. **Install Experimantal Finance Model**
 
-[Download](#) .gguf file.
+[Download](https://drive.google.com/file/d/1dP9YmgGIBrsykEITlajESoGLDREJ_0l6/view?usp=sharing) .gguf file.
 Then coppy this file to CustomeLLM/v1.6 folder.(keep the other file as it is and don't change the .gguf file name)
 Then open this folder and run these codes.
 ~~~
