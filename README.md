@@ -117,6 +117,7 @@ pip list
 ~~~
 [auth]
 redirect_uri = "http://localhost:8501/oauth2callback"
+cookie_secret = "xxx"
 client_id = "<file this with your client_id>"
 client_secret = "file this with your client_secret>"
 server_metadata_url = "https://accounts.google.com/.well-known/openid-configuration" 
@@ -266,7 +267,6 @@ We'll get back to you as soon as possible!
 SLIIT 3rd Year 1st Semmester Project
 
 </div>
-```
 
 ---
 
