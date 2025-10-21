@@ -13,7 +13,7 @@ import numpy as np
 
 st.set_page_config(
     page_title="Personal Finance Advisor",
-    page_icon="💰",
+    # page_icon="💰",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -302,7 +302,7 @@ def main():
     db = SessionLocal()
 
     # Header
-    st.markdown("# 💰 Personal Finance Advisor Dashboard")
+    st.markdown("# Personal Finance Advisor Dashboard")
     # st.markdown(f"**User ID:** {user_id}")
     st.divider()
 

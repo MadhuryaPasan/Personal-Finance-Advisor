@@ -117,6 +117,7 @@ pip list
 ~~~
 [auth]
 redirect_uri = "http://localhost:8501/oauth2callback"
+cookie_secret = "xxx"
 client_id = "<file this with your client_id>"
 client_secret = "file this with your client_secret>"
 server_metadata_url = "https://accounts.google.com/.well-known/openid-configuration" 
@@ -237,9 +238,9 @@ Personal-Finance-Advisor/
 
 | Student ID | Name | Email |
 |------------|------|-------|
-| IT23429628 | ERANDUNU P.H.L | it23191488@my.sliit.lk |
+| IT23429628 | ERANDUNU P.H.L | it23429628@my.sliit.lk |
 | IT23191488 | Perera P.K.M.P | it23191488@my.sliit.lk |
-| IT23334038 | WIJEWARDENA P.K.L | it23191488@my.sliit.lk |
+| IT23334038 | WIJEWARDENA P.K.L | it23334038@my.sliit.lk |
 | IT23343320 | Senadeera D.M.K.K | it23343320@my.sliit.lk |
 ---
 
@@ -266,7 +267,6 @@ We'll get back to you as soon as possible!
 SLIIT 3rd Year 1st Semmester Project
 
 </div>
-```
 
 ---
 
