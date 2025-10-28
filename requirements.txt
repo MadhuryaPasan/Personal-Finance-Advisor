@@ -6,7 +6,7 @@ openai
 google-auth
 google-auth-oauthlib
 python-jose[cryptography]
-"fastapi[all]"
+fastapi[all]
 pydantic
 bleach
 plotly
