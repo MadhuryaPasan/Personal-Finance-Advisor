@@ -33,12 +33,12 @@ All accessible through a beautiful **Streamlit dashboard** and a robust **FastAP
 
 ##  **Core AI Agents**
 
-| Agent | Description | 
-|:------|:-------------|
-| ** Expense Categorizer Agent** | Uses AI/ML to analyze transaction text and automatically classify it into categories | 
-| ** Budget Tracker Agent** | Monitors monthly spending against limits and alerts when overspending | 
-| ** Saving Goal Planner Agent** | Helps users plan savings goals and calculate required contributions | 
-| ** Transaction Agent ** | Handle all Income and Expence transactions | 
+| Agent                     | Description | 
+|:--------------------------|:-------------|
+| Expense Categorizer Agent | Uses AI/ML to analyze transaction text and automatically classify it into categories | 
+| Budget Tracker Agent      | Monitors monthly spending against limits and alerts when overspending | 
+| Saving Goal Planner Agent | Helps users plan savings goals and calculate required contributions | 
+| Transaction Agent         | Handle all Income and Expence transactions | 
 
 ---
 
@@ -183,12 +183,15 @@ Personal-Finance-Advisor/
 │   └── transactionsAgent.py        # Transaction processing agent
 ├── 📁 api/                          # FastAPI backend
 │   └── main.py                      # FastAPI main application
+├── 📁 images/                   
+│   ├── background.jpg
 ├── 📁 CustomeLLM/                   # Custom ollama model
 │   ├── 📁 v1.6/                 
 │   │   ├── gemma-3-1b-it.Q8_0.gguf  # Model gguf (You need to dwonload this from the given link)
 │   │   ├── info.ipynb                # For testing (get the details form gguf)
 │   │   ├── Modelfile                # Ollama Model file
 │   │   ├── Note.md                  # Instructions
+│   │   ├── Finance_v1_6.ipynb       # original .ipynb file that includes the finetuning code
 ├── 📁 controller/                   # Controllers
 │   ├── 📁 database/                 # Database controllers
 │   │   ├── __init__.py
