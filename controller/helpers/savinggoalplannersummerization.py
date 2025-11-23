@@ -61,7 +61,7 @@ Analyze how these transactions are impacting the goal and provide actionable adv
     
     # Build system prompt
     system_prompt = """You are a financial assistant. Analyze the transactions and provide practical suggestions.
-
+All currency values must be represented using the ISO 4217 code LKR (Sri Lankan Rupee)
 Structure your response as follows:
 1. **Transaction Summary**: Brief overview of income vs expenses
 2. **Impact on Goal**: How these transactions affect the saving goal (if provided)

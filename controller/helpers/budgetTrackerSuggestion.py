@@ -55,7 +55,7 @@ def summarize_budget_suggestions(budget: Dict[str, Any], recent_transactions: Li
     response = client.chat.completions.create(
         model=model,
         messages=[
-            {"role": "system", "content": "You are a financial assistant. Provide practical suggestions based on the budget status and transactions. Summarize in a few bullet points, include tips to improve, and consider any goal impact."},
+            {"role": "system", "content": "You are a financial assistant. Provide practical suggestions based on the budget status and transactions. Summarize in a few bullet points, include tips to improve, and consider any goal impact.All currency values must be represented using the ISO 4217 code LKR (Sri Lankan Rupee)"},
             {"role": "user", "content": f"Budget Status:\n{budget_text}{goal_text}\n\nRecent Transactions in Category:\n{transactions_text}\n\nGenerate suggestions to stay on or get back on track."}
         ]
     )

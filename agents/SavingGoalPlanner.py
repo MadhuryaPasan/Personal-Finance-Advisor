@@ -43,6 +43,7 @@ class SavingGoalPlannerAgent:
             current_savings defaults to 0 if not specified by user.
         """
         system_prompt = """You are a financial assistant that extracts saving goal details from user requests.
+        All currency values must be represented using the ISO 4217 code LKR (Sri Lankan Rupee)
         
         Extract and return a JSON object with these fields:
         - "goal_name": The name/description of the saving goal (string)

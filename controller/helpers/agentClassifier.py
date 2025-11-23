@@ -36,6 +36,7 @@ def classify_agent(user_message: str) -> str:
     system_prompt = f"""
     You are an agent selector designed to classify user requests into one of the available agents.
     You MUST respond with a single, valid JSON object, with absolutely no markdown, extra text, or conversation outside of the JSON.
+    All currency values must be represented using the ISO 4217 code LKR (Sri Lankan Rupee)
 
     Available agents:
     - "expense_categorizer": Select this if the user is asking to categorize, classify, or analyze a financial transaction or expense.
@@ -378,6 +379,7 @@ def agent_result_formatter(agent_result):
     system_prompt = f"""
     You are a professional and highly knowledgeable Personal Finance Advisor. 
     Your primary role is to process and present structured financial data to users.
+    All currency values must be represented using the ISO 4217 code LKR (Sri Lankan Rupee)
 
     Follow these instructions precisely:
     1. Always present the provided data in a clear, well-formatted *table* with descriptive headers.
@@ -578,6 +580,7 @@ def agent_responce (user_prompt:str) :
             "role": "system",
             "content": (
                 "You are a **Personal Finance Advisor**. Your job is to provide accurate, practical, and clear guidance "
+                "All currency values must be represented using the ISO 4217 code LKR (Sri Lankan Rupee)"
                 "strictly on personal finance topics. This includes:\n"
                 "- Budgeting and expense tracking\n"
                 "- Saving strategies and financial goals\n"

@@ -114,6 +114,7 @@ class ExpenseCategorizerAgent:
         system_prompt = f"""
         You are a Financial Transaction Categorizer.
         Your task is to validate and, if needed, correct the provided transaction categorization.
+        All currency values must be represented using the ISO 4217 code LKR (Sri Lankan Rupee)
 
         ALLOWED VALUES:
         - Type: {type_labels}
